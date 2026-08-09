@@ -6,8 +6,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// MongoDB Connection (Apna MongoDB Atlas URI yaha dalein)
-const MONGO_URI = process.env.MONGO_URI || 'YOUR_MONGODB_ATLAS_URI_HERE';
+// MongoDB Connection (Aapka URI password ke sath set hai)
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://Carlease:car@lease123@cluster0.bkey1c1.mongodb.net/?appName=Cluster0';
 
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
@@ -39,17 +39,7 @@ const leaseSchema = new mongoose.Schema({
 const LeaseEntry = mongoose.model('LeaseEntry', leaseSchema);
 
 // Routes
-// 1. Get All Entries
-app.get('/api/entries', async (req, res) => {
-    try {
-        const entries = await LeaseEntry.find();
-        res.json(entries);
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// 2. Add New Entry
+// 1. Get All Entries (Latest entry sabse upar dikhegi)
 app.get('/api/entries', async (req, res) => {
     try {
         const entries = await LeaseEntry.find().sort({ _id: -1 });
@@ -59,6 +49,7 @@ app.get('/api/entries', async (req, res) => {
     }
 });
 
+// 2. Add New Entry
 app.post('/api/entries', async (req, res) => {
     try {
         const count = await LeaseEntry.countDocuments();
