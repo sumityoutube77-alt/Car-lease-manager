@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Haryana Car Lease - Professional Dashboard</title>
+    <title>Haryana Car Lease - Secure Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -58,7 +58,6 @@
             padding: 12px;
         }
 
-        /* Animated Background */
         .bg-animation {
             position: fixed;
             top: 0;
@@ -119,8 +118,8 @@
             z-index: 1;
         }
 
-        /* ========== LOGIN MODAL ========== */
-        #loginOverlay {
+        /* ========== AUTH MODALS ========== */
+        .auth-overlay {
             position: fixed;
             inset: 0;
             background: rgba(15, 23, 42, 0.7);
@@ -134,22 +133,28 @@
             animation: fadeIn 0.5s ease;
         }
 
+        .auth-overlay.hidden {
+            display: none;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
 
-        .login-card {
+        .auth-card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
-            padding: 40px;
+            padding: 35px;
             border-radius: var(--radius);
             width: 100%;
-            max-width: 420px;
+            max-width: 440px;
             box-shadow: var(--shadow);
             animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            max-height: 95vh;
+            overflow-y: auto;
         }
 
         @keyframes slideUp {
@@ -157,16 +162,16 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .login-card .logo {
-            width: 80px;
-            height: 80px;
+        .auth-card .logo {
+            width: 72px;
+            height: 72px;
             background: var(--primary-gradient);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 16px;
-            font-size: 36px;
+            margin: 0 auto 12px;
+            font-size: 32px;
             animation: pulse 2s infinite;
         }
 
@@ -175,9 +180,9 @@
             50% { transform: scale(1.05); }
         }
 
-        .login-card h2 {
+        .auth-card h2 {
             text-align: center;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 700;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
@@ -185,50 +190,50 @@
             background-clip: text;
         }
 
-        .login-card p {
+        .auth-card .subtitle {
             text-align: center;
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-top: 4px;
-            margin-bottom: 24px;
-        }
-
-        .login-card .input-group {
-            margin-bottom: 16px;
-        }
-
-        .login-card .input-group label {
-            display: block;
             font-size: 0.85rem;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
+            margin-top: 4px;
+            margin-bottom: 20px;
         }
 
-        .login-card .input-group input {
+        .auth-card .input-group {
+            margin-bottom: 14px;
+        }
+
+        .auth-card .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 5px;
+        }
+
+        .auth-card .input-group input {
             width: 100%;
-            padding: 12px 16px;
-            border: 2px solid rgba(37, 99, 235, 0.15);
-            border-radius: 12px;
+            padding: 11px 14px;
+            border: 2px solid rgba(37, 99, 235, 0.12);
+            border-radius: 10px;
             background: rgba(255, 255, 255, 0.5);
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: var(--transition);
             color: var(--text-primary);
         }
 
-        .login-card .input-group input:focus {
+        .auth-card .input-group input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
             outline: none;
         }
 
-        .login-btn {
+        .auth-btn {
             width: 100%;
-            padding: 14px;
+            padding: 13px;
             background: var(--primary-gradient);
             color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
@@ -237,13 +242,85 @@
             overflow: hidden;
         }
 
-        .login-btn:hover {
+        .auth-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 24px rgba(37, 99, 235, 0.3);
         }
 
-        .login-btn:active {
+        .auth-btn:active {
             transform: scale(0.98);
+        }
+
+        .auth-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .auth-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .auth-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .auth-links a:hover {
+            text-decoration: underline;
+        }
+
+        .password-strength {
+            height: 4px;
+            margin-top: 6px;
+            border-radius: 4px;
+            background: #e2e8f0;
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .password-strength .bar {
+            height: 100%;
+            transition: var(--transition);
+            border-radius: 4px;
+        }
+
+        .password-strength .bar.weak { width: 33%; background: #ef4444; }
+        .password-strength .bar.medium { width: 66%; background: #f59e0b; }
+        .password-strength .bar.strong { width: 100%; background: #10b981; }
+
+        .otp-input-group {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .otp-input-group input {
+            width: 50px;
+            height: 56px;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            border: 2px solid rgba(37, 99, 235, 0.15);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            transition: var(--transition);
+            color: var(--text-primary);
+        }
+
+        .otp-input-group input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+            outline: none;
         }
 
         /* ========== MAIN APP ========== */
@@ -262,34 +339,34 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
-            padding: 16px 20px;
+            padding: 14px 20px;
             margin-bottom: 20px;
             box-shadow: var(--shadow);
             transition: var(--transition);
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .brand-icon {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             background: var(--primary-gradient);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 22px;
             flex-shrink: 0;
         }
 
         .brand h1 {
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             font-weight: 800;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
@@ -299,7 +376,7 @@
         }
 
         .brand span {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-secondary);
             display: block;
             -webkit-text-fill-color: var(--text-secondary);
@@ -308,21 +385,21 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .theme-toggle {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            border: 2px solid rgba(37, 99, 235, 0.2);
+            border: 2px solid rgba(37, 99, 235, 0.15);
             background: rgba(255, 255, 255, 0.5);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             transition: var(--transition);
         }
 
@@ -335,16 +412,22 @@
         .user-badge {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 6px 12px 6px 6px;
+            gap: 8px;
+            padding: 5px 10px 5px 5px;
             border-radius: 50px;
             background: rgba(37, 99, 235, 0.08);
             border: 1px solid rgba(37, 99, 235, 0.1);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-badge:hover {
+            background: rgba(37, 99, 235, 0.12);
         }
 
         .user-avatar {
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             background: var(--primary-gradient);
             display: flex;
@@ -352,27 +435,27 @@
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .user-name {
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
 
         .user-status {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--success);
         }
 
         .logout-btn {
-            padding: 8px 16px;
-            border-radius: 10px;
+            padding: 7px 14px;
+            border-radius: 8px;
             border: none;
             background: rgba(239, 68, 68, 0.1);
             color: var(--danger);
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: var(--transition);
         }
@@ -390,8 +473,8 @@
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border);
             border-radius: var(--radius);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 18px;
+            margin-bottom: 18px;
             box-shadow: var(--shadow);
             transition: var(--transition);
             animation: slideUp 0.5s ease;
@@ -405,13 +488,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
 
         .card-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             display: flex;
             align-items: center;
@@ -423,25 +506,25 @@
             color: white;
             padding: 2px 10px;
             border-radius: 50px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
         }
 
         /* ========== FORM ========== */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            gap: 3px;
         }
 
         .form-group label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 600;
             color: var(--text-secondary);
             text-transform: uppercase;
@@ -449,11 +532,11 @@
         }
 
         .form-group input {
-            padding: 10px 14px;
+            padding: 9px 12px;
             border: 2px solid rgba(37, 99, 235, 0.1);
-            border-radius: 10px;
+            border-radius: 8px;
             background: rgba(255, 255, 255, 0.5);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: var(--transition);
             color: var(--text-primary);
             width: 100%;
@@ -461,68 +544,61 @@
 
         .form-group input:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.06);
             outline: none;
-            background: rgba(255, 255, 255, 0.8);
         }
 
         .form-group input:read-only {
-            background: rgba(37, 99, 235, 0.05);
+            background: rgba(37, 99, 235, 0.04);
             cursor: not-allowed;
         }
 
         .checkbox-grid {
             grid-column: 1 / -1;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 8px;
-            padding: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 6px;
+            padding: 12px;
             background: rgba(37, 99, 235, 0.04);
-            border-radius: 12px;
-            border: 1px solid rgba(37, 99, 235, 0.08);
+            border-radius: 10px;
+            border: 1px solid rgba(37, 99, 235, 0.06);
         }
 
         .checkbox-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
+            gap: 6px;
+            font-size: 0.8rem;
             font-weight: 500;
             cursor: pointer;
-            padding: 6px 10px;
-            border-radius: 8px;
+            padding: 5px 8px;
+            border-radius: 6px;
             transition: var(--transition);
         }
 
         .checkbox-item:hover {
-            background: rgba(37, 99, 235, 0.06);
+            background: rgba(37, 99, 235, 0.05);
         }
 
         .checkbox-item input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             accent-color: var(--primary);
             cursor: pointer;
             flex-shrink: 0;
         }
 
-        .checkbox-item.checked {
-            color: var(--primary);
-        }
-
         .btn-submit {
             grid-column: 1 / -1;
-            padding: 14px;
+            padding: 12px;
             background: var(--primary-gradient);
             color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 1rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            position: relative;
-            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -546,8 +622,8 @@
 
         .btn-submit .spinner {
             display: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 3px solid rgba(255,255,255,0.3);
             border-radius: 50%;
             border-top-color: white;
@@ -569,21 +645,21 @@
         /* ========== EXPORT BUTTONS ========== */
         .export-group {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .btn-export {
-            padding: 8px 16px;
+            padding: 6px 14px;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .btn-export.excel {
@@ -612,15 +688,15 @@
         .table-wrapper {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            margin: 0 -6px;
-            padding: 0 6px;
+            margin: 0 -4px;
+            padding: 0 4px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8rem;
-            min-width: 600px;
+            font-size: 0.75rem;
+            min-width: 550px;
         }
 
         thead {
@@ -630,11 +706,11 @@
         }
 
         th {
-            padding: 10px 12px;
+            padding: 8px 10px;
             text-align: left;
             font-weight: 600;
             color: var(--text-secondary);
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             border-bottom: 2px solid rgba(37, 99, 235, 0.1);
@@ -643,8 +719,8 @@
         }
 
         td {
-            padding: 10px 12px;
-            border-bottom: 1px solid rgba(37, 99, 235, 0.06);
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(37, 99, 235, 0.05);
             white-space: nowrap;
         }
 
@@ -656,23 +732,16 @@
             background: rgba(37, 99, 235, 0.04);
         }
 
-        .badge-yes {
-            color: var(--success);
-            font-weight: 700;
-        }
-
-        .badge-no {
-            color: var(--danger);
-            font-weight: 700;
-        }
+        .badge-yes { color: var(--success); font-weight: 700; }
+        .badge-no { color: var(--danger); font-weight: 700; }
 
         .btn-edit {
-            padding: 4px 12px;
+            padding: 3px 10px;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             background: var(--warning);
             color: white;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
@@ -686,6 +755,23 @@
             transform: scale(0.95);
         }
 
+        .btn-delete {
+            padding: 3px 10px;
+            border: none;
+            border-radius: 5px;
+            background: var(--danger);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-left: 4px;
+        }
+
+        .btn-delete:hover {
+            transform: scale(1.05);
+        }
+
         /* ========== TOAST ========== */
         .toast-container {
             position: fixed;
@@ -694,130 +780,69 @@
             z-index: 9999;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            max-width: 400px;
+            gap: 8px;
+            max-width: 380px;
             width: 100%;
         }
 
         .toast {
-            padding: 14px 20px;
-            border-radius: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
             color: white;
             font-weight: 500;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
             animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
-            gap: 10px;
-            transform-origin: right;
+            gap: 8px;
         }
 
-        .toast.success {
-            background: rgba(16, 185, 129, 0.9);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .toast.error {
-            background: rgba(239, 68, 68, 0.9);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .toast.info {
-            background: rgba(37, 99, 235, 0.9);
-            border: 1px solid rgba(37, 99, 235, 0.2);
-        }
+        .toast.success { background: rgba(16, 185, 129, 0.9); }
+        .toast.error { background: rgba(239, 68, 68, 0.9); }
+        .toast.info { background: rgba(37, 99, 235, 0.9); }
 
         @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px) scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0) scale(1);
-            }
+            from { opacity: 0; transform: translateX(100px) scale(0.8); }
+            to { opacity: 1; transform: translateX(0) scale(1); }
         }
 
         /* ========== EMPTY STATE ========== */
         .empty-state {
             text-align: center;
-            padding: 40px 20px;
+            padding: 30px 16px;
         }
 
-        .empty-state .icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .empty-state h3 {
-            font-size: 1.1rem;
-            margin-bottom: 4px;
-        }
-
-        .empty-state p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
+        .empty-state .icon { font-size: 40px; margin-bottom: 8px; }
+        .empty-state h3 { font-size: 1rem; margin-bottom: 4px; }
+        .empty-state p { color: var(--text-secondary); font-size: 0.85rem; }
 
         /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
-            body { padding: 8px; }
-            
-            header {
-                padding: 12px 16px;
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .brand h1 { font-size: 1rem; }
-            .brand-icon { width: 40px; height: 40px; font-size: 20px; }
-
-            .header-actions {
-                justify-content: space-between;
-            }
-
-            .glass-card { padding: 14px; }
+            body { padding: 6px; }
+            header { padding: 10px 14px; flex-direction: column; align-items: stretch; }
+            .brand h1 { font-size: 0.95rem; }
+            .brand-icon { width: 36px; height: 36px; font-size: 18px; }
+            .header-actions { justify-content: space-between; }
+            .glass-card { padding: 12px; }
             .form-grid { grid-template-columns: 1fr; }
             .checkbox-grid { grid-template-columns: repeat(2, 1fr); }
-
-            .card-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .export-group {
-                justify-content: stretch;
-            }
-
-            .btn-export {
-                flex: 1;
-                justify-content: center;
-            }
-
-            .login-card { padding: 24px; }
-            .user-name { font-size: 0.75rem; }
-
-            th, td {
-                padding: 6px 8px;
-                font-size: 0.7rem;
-            }
-
-            .toast-container {
-                bottom: 10px;
-                right: 10px;
-                left: 10px;
-                max-width: 100%;
-            }
+            .card-header { flex-direction: column; align-items: stretch; }
+            .export-group { justify-content: stretch; }
+            .btn-export { flex: 1; justify-content: center; }
+            .auth-card { padding: 24px; }
+            .user-name { font-size: 0.7rem; }
+            th, td { padding: 5px 6px; font-size: 0.65rem; }
+            .toast-container { bottom: 10px; right: 10px; left: 10px; max-width: 100%; }
+            .otp-input-group input { width: 40px; height: 48px; font-size: 1.2rem; }
         }
 
         @media (max-width: 480px) {
             .checkbox-grid { grid-template-columns: 1fr; }
-            .user-badge { padding: 4px 8px 4px 4px; }
-            .user-avatar { width: 28px; height: 28px; font-size: 12px; }
-            .logout-btn { padding: 6px 12px; font-size: 0.7rem; }
-            .brand h1 { font-size: 0.9rem; }
+            .user-badge { padding: 3px 6px 3px 3px; }
+            .user-avatar { width: 24px; height: 24px; font-size: 10px; }
+            .logout-btn { padding: 5px 10px; font-size: 0.65rem; }
         }
 
         @media (min-width: 769px) {
@@ -825,32 +850,16 @@
             .checkbox-grid { grid-template-columns: repeat(6, 1fr); }
         }
 
-        /* Scrollbar Styling */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(37, 99, 235, 0.05); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        ::-webkit-scrollbar-track {
-            background: rgba(37, 99, 235, 0.05);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--primary-light);
-            border-radius: 10px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
-        }
-
-        /* Skeleton Loader */
         .skeleton {
             animation: shimmer 1.5s infinite;
             background: linear-gradient(90deg, rgba(37, 99, 235, 0.06) 25%, rgba(37, 99, 235, 0.12) 50%, rgba(37, 99, 235, 0.06) 75%);
             background-size: 200% 100%;
-            border-radius: 8px;
+            border-radius: 6px;
         }
 
         @keyframes shimmer {
@@ -872,11 +881,11 @@
     <div class="toast-container" id="toastContainer"></div>
 
     <!-- ==================== LOGIN ==================== -->
-    <div id="loginOverlay">
-        <div class="login-card">
+    <div class="auth-overlay" id="loginOverlay">
+        <div class="auth-card">
             <div class="logo">🚗</div>
             <h2>Haryana Car Lease</h2>
-            <p>Secure Fleet Management Portal</p>
+            <p class="subtitle">Secure Fleet Management Portal</p>
             <form id="loginForm">
                 <div class="input-group">
                     <label>👤 Username</label>
@@ -886,7 +895,102 @@
                     <label>🔒 Password</label>
                     <input type="password" id="loginPass" placeholder="Enter your password" required>
                 </div>
-                <button type="submit" class="login-btn">🚀 Secure Login</button>
+                <button type="submit" class="auth-btn" id="loginBtn">🚀 Login</button>
+                <div class="auth-links">
+                    <a onclick="showRegister()">🆕 Create Account</a>
+                    <a onclick="showForgotPassword()">🔑 Forgot Password?</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== REGISTER ==================== -->
+    <div class="auth-overlay hidden" id="registerOverlay">
+        <div class="auth-card">
+            <div class="logo">🚗</div>
+            <h2>Create Account</h2>
+            <p class="subtitle">Join Haryana Car Lease</p>
+            <form id="registerForm">
+                <div class="input-group">
+                    <label>👤 Full Name</label>
+                    <input type="text" id="regFullName" placeholder="Your full name" required>
+                </div>
+                <div class="input-group">
+                    <label>📧 Email</label>
+                    <input type="email" id="regEmail" placeholder="your@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label>👤 Username</label>
+                    <input type="text" id="regUsername" placeholder="Choose a username" required>
+                </div>
+                <div class="input-group">
+                    <label>🔒 Password</label>
+                    <input type="password" id="regPassword" placeholder="Min 6 characters" required oninput="checkPasswordStrength(this.value)">
+                    <div class="password-strength"><div class="bar" id="strengthBar"></div></div>
+                </div>
+                <div class="input-group">
+                    <label>🔒 Confirm Password</label>
+                    <input type="password" id="regConfirmPass" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="auth-btn" id="registerBtn">📝 Register</button>
+                <div class="auth-links">
+                    <a onclick="showLogin()">← Back to Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== FORGOT PASSWORD ==================== -->
+    <div class="auth-overlay hidden" id="forgotOverlay">
+        <div class="auth-card">
+            <div class="logo">🔑</div>
+            <h2>Reset Password</h2>
+            <p class="subtitle">Enter your username to reset password</p>
+            <form id="forgotForm">
+                <div class="input-group">
+                    <label>👤 Username</label>
+                    <input type="text" id="forgotUsername" placeholder="Enter your username" required>
+                </div>
+                <button type="submit" class="auth-btn" id="forgotBtn">📧 Send OTP</button>
+                <div class="auth-links">
+                    <a onclick="showLogin()">← Back to Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== OTP VERIFICATION ==================== -->
+    <div class="auth-overlay hidden" id="otpOverlay">
+        <div class="auth-card">
+            <div class="logo">📱</div>
+            <h2>Verify OTP</h2>
+            <p class="subtitle">Enter the 6-digit code sent to your email</p>
+            <form id="otpForm">
+                <div class="input-group">
+                    <label>🔢 OTP Code</label>
+                    <div class="otp-input-group">
+                        <input type="text" maxlength="1" class="otp-input" required>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                        <input type="text" maxlength="1" class="otp-input" required>
+                    </div>
+                    <input type="hidden" id="otpResetUsername">
+                </div>
+                <div class="input-group">
+                    <label>🔒 New Password</label>
+                    <input type="password" id="otpNewPassword" placeholder="New password (min 6 chars)" required>
+                </div>
+                <div class="input-group">
+                    <label>🔒 Confirm Password</label>
+                    <input type="password" id="otpConfirmPass" placeholder="Confirm new password" required>
+                </div>
+                <button type="submit" class="auth-btn" id="otpBtn">✅ Reset Password</button>
+                <div class="auth-links">
+                    <a onclick="showLogin()">← Back to Login</a>
+                    <a onclick="resendOTP()">🔄 Resend OTP</a>
+                </div>
             </form>
         </div>
     </div>
@@ -900,12 +1004,12 @@
                 <div class="brand-icon">🚗</div>
                 <div>
                     <h1>Haryana Car Lease</h1>
-                    <span>Professional Fleet Management</span>
+                    <span>Secure Fleet Management</span>
                 </div>
             </div>
             <div class="header-actions">
                 <button class="theme-toggle" id="themeToggle" title="Toggle Theme">🌙</button>
-                <div class="user-badge">
+                <div class="user-badge" onclick="showProfile()">
                     <div class="user-avatar" id="userAvatar">S</div>
                     <div>
                         <div class="user-name" id="displayUsername">User</div>
@@ -922,7 +1026,7 @@
                 <div class="card-title">
                     ✏️ <span id="formTitle">Add New Lease Entry</span>
                 </div>
-                <span style="font-size:0.75rem; color:var(--text-secondary);" id="formHint">Fill all required fields</span>
+                <span style="font-size:0.7rem; color:var(--text-secondary);" id="formHint">Fill all required fields</span>
             </div>
             <form id="leaseForm" class="form-grid">
                 <input type="hidden" id="editingId">
@@ -979,7 +1083,7 @@
 
                 <button type="submit" class="btn-submit" id="submitBtn">
                     <span class="spinner"></span>
-                    <span class="btn-text">💾 Save Entry to Database</span>
+                    <span class="btn-text">💾 Save Entry</span>
                 </button>
             </form>
         </div>
@@ -988,7 +1092,7 @@
         <div class="glass-card">
             <div class="card-header">
                 <div class="card-title">
-                    📋 All Lease Entries
+                    📋 My Lease Entries
                     <span class="badge-count" id="recordCount">0</span>
                 </div>
                 <div class="export-group">
@@ -1022,10 +1126,10 @@
                     </thead>
                     <tbody id="tableBody">
                         <tr>
-                            <td colspan="18" style="text-align:center; padding:30px;">
-                                <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
-                                    <div class="spinner" style="display:inline-block; width:30px; height:30px; border:3px solid rgba(37,99,235,0.2); border-radius:50%; border-top-color:var(--primary); animation:spin 0.8s linear infinite;"></div>
-                                    <span style="color:var(--text-secondary);">Loading entries...</span>
+                            <td colspan="18" style="text-align:center; padding:25px;">
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                                    <div class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid rgba(37,99,235,0.2); border-radius:50%; border-top-color:var(--primary); animation:spin 0.8s linear infinite;"></div>
+                                    <span style="color:var(--text-secondary); font-size:0.85rem;">Loading entries...</span>
                                 </div>
                             </td>
                         </tr>
@@ -1041,8 +1145,11 @@
         // ============================================================
         const API_BASE_URL = 'https://car-lease-manager.onrender.com';
         const API_URL = `${API_BASE_URL}/api/entries`;
+        const AUTH_URL = `${API_BASE_URL}/api/auth`;
         let globalEntriesData = [];
         let isDarkMode = false;
+        let currentUser = null;
+        let sessionTimer = null;
 
         // ============================================================
         // TOAST NOTIFICATIONS
@@ -1051,7 +1158,7 @@
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+            const icons = { success: '✅', error: '❌', info: 'ℹ️', warning: '⚠️' };
             toast.innerHTML = `${icons[type] || 'ℹ️'} ${message}`;
             container.appendChild(toast);
             setTimeout(() => {
@@ -1071,7 +1178,6 @@
             localStorage.setItem('carLeaseTheme', isDarkMode ? 'dark' : 'light');
         });
 
-        // Load saved theme
         const savedTheme = localStorage.getItem('carLeaseTheme');
         if (savedTheme === 'dark') {
             isDarkMode = true;
@@ -1080,29 +1186,278 @@
         }
 
         // ============================================================
+        // AUTH FUNCTIONS
+        // ============================================================
+        function showLogin() {
+            document.getElementById('loginOverlay').classList.remove('hidden');
+            document.getElementById('registerOverlay').classList.add('hidden');
+            document.getElementById('forgotOverlay').classList.add('hidden');
+            document.getElementById('otpOverlay').classList.add('hidden');
+        }
+
+        function showRegister() {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('registerOverlay').classList.remove('hidden');
+            document.getElementById('forgotOverlay').classList.add('hidden');
+            document.getElementById('otpOverlay').classList.add('hidden');
+        }
+
+        function showForgotPassword() {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('registerOverlay').classList.add('hidden');
+            document.getElementById('forgotOverlay').classList.remove('hidden');
+            document.getElementById('otpOverlay').classList.add('hidden');
+        }
+
+        function showOTP(username) {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('registerOverlay').classList.add('hidden');
+            document.getElementById('forgotOverlay').classList.add('hidden');
+            document.getElementById('otpOverlay').classList.remove('hidden');
+            document.getElementById('otpResetUsername').value = username;
+            // Focus first OTP input
+            document.querySelector('.otp-input').focus();
+        }
+
+        // OTP Input Auto-focus
+        document.querySelectorAll('.otp-input').forEach((input, index, arr) => {
+            input.addEventListener('input', function() {
+                if (this.value.length === 1 && index < arr.length - 1) {
+                    arr[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+                    arr[index - 1].focus();
+                }
+            });
+        });
+
+        // Password Strength
+        function checkPasswordStrength(password) {
+            const bar = document.getElementById('strengthBar');
+            if (password.length === 0) { bar.className = 'bar'; return; }
+            const strength = password.length >= 8 ? 'strong' : password.length >= 5 ? 'medium' : 'weak';
+            bar.className = `bar ${strength}`;
+        }
+
+        // ============================================================
+        // REGISTER
+        // ============================================================
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('registerBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Creating...';
+
+            const fullName = document.getElementById('regFullName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirmPass').value;
+
+            if (password !== confirm) {
+                showToast('Passwords do not match!', 'error');
+                btn.disabled = false;
+                btn.textContent = '📝 Register';
+                return;
+            }
+
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters!', 'error');
+                btn.disabled = false;
+                btn.textContent = '📝 Register';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${AUTH_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, email, username, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('✅ Account created successfully! Please login.', 'success');
+                    showLogin();
+                    document.getElementById('loginUser').value = username;
+                } else {
+                    showToast(result.error || 'Registration failed', 'error');
+                }
+            } catch (err) {
+                showToast('Network error: ' + err.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = '📝 Register';
+        });
+
+        // ============================================================
         // LOGIN
         // ============================================================
-        document.getElementById('loginForm').addEventListener('submit', (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const user = document.getElementById('loginUser').value.trim();
-            const pass = document.getElementById('loginPass').value.trim();
+            const btn = document.getElementById('loginBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Logging in...';
 
-            if (user && pass) {
-                localStorage.setItem('carLeaseUser', user);
-                initSession(user);
-                showToast(`Welcome back, ${user}! 👋`, 'success');
+            const username = document.getElementById('loginUser').value.trim();
+            const password = document.getElementById('loginPass').value.trim();
+
+            try {
+                const response = await fetch(`${AUTH_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    currentUser = result.user;
+                    localStorage.setItem('carLeaseUser', username);
+                    localStorage.setItem('carLeaseToken', result.token);
+                    initSession(username);
+                    showToast(`Welcome back, ${result.user.fullName}! 👋`, 'success');
+                    startSessionTimer();
+                } else {
+                    showToast(result.error || 'Invalid credentials', 'error');
+                }
+            } catch (err) {
+                showToast('Network error: ' + err.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = '🚀 Login';
+        });
+
+        // ============================================================
+        // FORGOT PASSWORD
+        // ============================================================
+        document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('forgotBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Sending...';
+
+            const username = document.getElementById('forgotUsername').value.trim();
+
+            try {
+                const response = await fetch(`${AUTH_URL}/forgot-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('✅ OTP sent to your email!', 'success');
+                    showOTP(username);
+                } else {
+                    showToast(result.error || 'User not found', 'error');
+                }
+            } catch (err) {
+                showToast('Network error: ' + err.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = '📧 Send OTP';
+        });
+
+        // ============================================================
+        // OTP VERIFICATION
+        // ============================================================
+        document.getElementById('otpForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('otpBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Resetting...';
+
+            const otpInputs = document.querySelectorAll('.otp-input');
+            const otp = Array.from(otpInputs).map(inp => inp.value).join('');
+            const username = document.getElementById('otpResetUsername').value;
+            const newPassword = document.getElementById('otpNewPassword').value;
+            const confirmPass = document.getElementById('otpConfirmPass').value;
+
+            if (otp.length !== 6) {
+                showToast('Please enter complete 6-digit OTP', 'error');
+                btn.disabled = false;
+                btn.textContent = '✅ Reset Password';
+                return;
+            }
+
+            if (newPassword !== confirmPass) {
+                showToast('Passwords do not match!', 'error');
+                btn.disabled = false;
+                btn.textContent = '✅ Reset Password';
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                showToast('Password must be at least 6 characters!', 'error');
+                btn.disabled = false;
+                btn.textContent = '✅ Reset Password';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${AUTH_URL}/reset-password`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, otp, newPassword })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast('✅ Password reset successfully! Please login.', 'success');
+                    showLogin();
+                    document.getElementById('loginUser').value = username;
+                } else {
+                    showToast(result.error || 'OTP verification failed', 'error');
+                }
+            } catch (err) {
+                showToast('Network error: ' + err.message, 'error');
+            }
+
+            btn.disabled = false;
+            btn.textContent = '✅ Reset Password';
+        });
+
+        function resendOTP() {
+            const username = document.getElementById('otpResetUsername').value;
+            if (username) {
+                showToast('📧 New OTP sent to your email!', 'info');
+            }
+        }
+
+        // ============================================================
+        // SESSION MANAGEMENT
+        // ============================================================
+        function startSessionTimer() {
+            if (sessionTimer) clearInterval(sessionTimer);
+            sessionTimer = setTimeout(() => {
+                showToast('⏰ Session expired. Please login again.', 'warning');
+                handleLogout();
+            }, 30 * 60 * 1000); // 30 minutes
+        }
+
+        // Reset timer on user activity
+        document.addEventListener('click', () => {
+            if (currentUser) {
+                clearTimeout(sessionTimer);
+                startSessionTimer();
             }
         });
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const savedUser = localStorage.getItem('carLeaseUser');
-            if (savedUser) {
-                initSession(savedUser);
-            }
-        });
-
+        // ============================================================
+        // INIT SESSION
+        // ============================================================
         function initSession(username) {
-            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('loginOverlay').classList.add('hidden');
             document.getElementById('appContent').style.display = 'block';
             document.getElementById('displayUsername').innerText = username;
             document.getElementById('userAvatar').innerText = username.charAt(0).toUpperCase();
@@ -1112,9 +1467,39 @@
         function handleLogout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('carLeaseUser');
+                localStorage.removeItem('carLeaseToken');
+                currentUser = null;
+                if (sessionTimer) clearTimeout(sessionTimer);
                 location.reload();
             }
         }
+
+        // Check saved session
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('carLeaseUser');
+            const savedToken = localStorage.getItem('carLeaseToken');
+            if (savedUser && savedToken) {
+                // Verify token with backend
+                fetch(`${AUTH_URL}/verify`, {
+                    headers: { 'Authorization': `Bearer ${savedToken}` }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.valid) {
+                        currentUser = data.user;
+                        initSession(savedUser);
+                        startSessionTimer();
+                    } else {
+                        localStorage.removeItem('carLeaseUser');
+                        localStorage.removeItem('carLeaseToken');
+                    }
+                })
+                .catch(() => {
+                    localStorage.removeItem('carLeaseUser');
+                    localStorage.removeItem('carLeaseToken');
+                });
+            }
+        });
 
         // ============================================================
         // FORM - Auto-calculate Bakaya
@@ -1133,11 +1518,14 @@
         paidInput.addEventListener('input', calculateBakaya);
 
         // ============================================================
-        // FETCH ENTRIES
+        // FETCH ENTRIES (User-specific)
         // ============================================================
         async function fetchEntries() {
             try {
-                const response = await fetch(API_URL);
+                const token = localStorage.getItem('carLeaseToken');
+                const response = await fetch(API_URL, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 globalEntriesData = await response.json();
                 renderTable(globalEntriesData);
@@ -1147,7 +1535,7 @@
                 showToast('Failed to load entries: ' + err.message, 'error');
                 document.getElementById('tableBody').innerHTML = `
                     <tr>
-                        <td colspan="18" style="text-align:center; padding:30px; color:var(--danger);">
+                        <td colspan="18" style="text-align:center; padding:25px; color:var(--danger);">
                             ❌ Failed to load data. Please refresh.
                         </td>
                     </tr>
@@ -1179,9 +1567,11 @@
 
             entries.forEach((entry, index) => {
                 const row = document.createElement('tr');
-                row.style.animationDelay = `${index * 30}ms`;
                 row.innerHTML = `
-                    <td><button class="btn-edit" onclick="editEntry('${entry._id}')">✏️</button></td>
+                    <td>
+                        <button class="btn-edit" onclick="editEntry('${entry._id}')">✏️</button>
+                        <button class="btn-delete" onclick="deleteEntry('${entry._id}')">🗑️</button>
+                    </td>
                     <td>${entry.serialNo || index + 1}</td>
                     <td>${entry.date || '-'}</td>
                     <td><strong>${entry.carBrand || '-'}</strong></td>
@@ -1230,12 +1620,35 @@
             document.getElementById('numberPlateTick').checked = !!entry.numberPlateTick;
             document.getElementById('agreementTick').checked = !!entry.agreementTick;
 
-            document.getElementById('formTitle').textContent = 'Edit Lease Entry';
+            document.getElementById('formTitle').textContent = '✏️ Edit Entry';
             document.getElementById('submitBtn').querySelector('.btn-text').textContent = '✏️ Update Entry';
-            document.getElementById('formHint').textContent = 'Updating entry #' + (entry.serialNo || '');
-            
+            document.getElementById('formHint').textContent = 'Editing #' + (entry.serialNo || '');
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            showToast('✏️ Editing entry - make your changes', 'info');
+            showToast('✏️ Edit mode - make your changes', 'info');
+        }
+
+        // ============================================================
+        // DELETE ENTRY
+        // ============================================================
+        async function deleteEntry(id) {
+            if (!confirm('Are you sure you want to delete this entry?')) return;
+
+            try {
+                const token = localStorage.getItem('carLeaseToken');
+                const response = await fetch(`${API_URL}/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (response.ok) {
+                    showToast('🗑️ Entry deleted successfully!', 'success');
+                    await fetchEntries();
+                } else {
+                    showToast('Failed to delete entry', 'error');
+                }
+            } catch (err) {
+                showToast('Network error: ' + err.message, 'error');
+            }
         }
 
         // ============================================================
@@ -1270,33 +1683,35 @@
             };
 
             try {
-                let response;
+                const token = localStorage.getItem('carLeaseToken');
                 const url = editingId ? `${API_URL}/${editingId}` : API_URL;
                 const method = editingId ? 'PUT' : 'POST';
 
-                response = await fetch(url, {
+                const response = await fetch(url, {
                     method,
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: JSON.stringify(formData)
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    showToast(result.message || (editingId ? '✅ Updated successfully!' : '✅ Saved successfully!'), 'success');
+                    showToast(result.message || (editingId ? '✅ Updated!' : '✅ Saved!'), 'success');
                     
                     document.getElementById('leaseForm').reset();
                     document.getElementById('editingId').value = '';
                     document.getElementById('formTitle').textContent = 'Add New Lease Entry';
-                    document.getElementById('submitBtn').querySelector('.btn-text').textContent = '💾 Save Entry to Database';
+                    document.getElementById('submitBtn').querySelector('.btn-text').textContent = '💾 Save Entry';
                     document.getElementById('formHint').textContent = 'Fill all required fields';
                     calculateBakaya();
                     await fetchEntries();
                 } else {
-                    showToast(result.error || 'Failed to save entry', 'error');
+                    showToast(result.error || 'Failed to save', 'error');
                 }
             } catch (err) {
-                console.error('Error saving data:', err);
                 showToast('Network error: ' + err.message, 'error');
             } finally {
                 submitBtn.classList.remove('loading');
@@ -1336,7 +1751,7 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Car Lease");
             XLSX.writeFile(wb, `CarLease_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast(`📊 Exported ${exportData.length} records to Excel!`, 'success');
+            showToast(`📊 Exported ${exportData.length} records!`, 'success');
         }
 
         function exportToPDF() {
@@ -1348,9 +1763,9 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l', 'mm', 'a4');
 
-            doc.setFontSize(18);
+            doc.setFontSize(16);
             doc.text('Haryana Car Lease - Records', 14, 18);
-            doc.setFontSize(10);
+            doc.setFontSize(9);
             doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
             doc.text(`Total: ${globalEntriesData.length} records`, 14, 31);
 
@@ -1382,7 +1797,16 @@
             });
 
             doc.save(`CarLease_${new Date().toISOString().split('T')[0]}.pdf`);
-            showToast(`📄 Exported ${globalEntriesData.length} records to PDF!`, 'success');
+            showToast(`📄 Exported ${globalEntriesData.length} records!`, 'success');
+        }
+
+        // ============================================================
+        // PROFILE (Bonus Feature)
+        // ============================================================
+        function showProfile() {
+            if (currentUser) {
+                showToast(`👤 ${currentUser.fullName}\n📧 ${currentUser.email}`, 'info');
+            }
         }
     </script>
 
