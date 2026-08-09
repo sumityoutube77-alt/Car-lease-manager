@@ -4,33 +4,46 @@ const cors = require('cors');
 
 const app = express();
 
-// Enhanced CORS configuration
+// Enhanced CORS Configuration - Allow all origins for testing
 app.use(cors({
-    origin: ['https://e77-alt.github.io', 'http://localhost:3000', 'https://your-frontend-domain.com'],
+    origin: '*', // Allow all origins for testing
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true
 }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// MongoDB Connection
+// MongoDB Connection - Fixed connection string with database name
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://Carlease:car@lease123@cluster0.bkey1c1.mongodb.net/carlease?retryWrites=true&w=majority&appName=Cluster0';
 
+console.log('Attempting to connect to MongoDB...');
 mongoose.connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
 })
-.then(() => console.log('✅ MongoDB Connected Successfully'))
+.then(() => {
+    console.log('✅ MongoDB Connected Successfully');
+    console.log('📊 Database:', mongoose.connection.db.databaseName);
+})
 .catch(err => {
     console.error('❌ DB Connection Error:', err);
-    process.exit(1);
+    // Don't exit process, let it try to reconnect
 });
 
-// Schema Definition with validation
+// Handle MongoDB connection errors after initial connection
+mongoose.connection.on('error', err => {
+    console.error('MongoDB connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.log('MongoDB disconnected');
+});
+
+// Schema Definition with proper validation
 const leaseSchema = new mongoose.Schema({
     serialNo: { type: Number, default: 0 },
     date: { type: String, required: true },
@@ -49,7 +62,10 @@ const leaseSchema = new mongoose.Schema({
     insuranceTick: { type: Boolean, default: false },
     numberPlateTick: { type: Boolean, default: false },
     agreementTick: { type: Boolean, default: false }
-}, { timestamps: true });
+}, { 
+    timestamps: true,
+    strict: true // This ensures only defined fields are saved
+});
 
 const LeaseEntry = mongoose.model('LeaseEntry', leaseSchema);
 
@@ -62,8 +78,10 @@ app.get('/', (req, res) => {
             getAll: 'GET /api/entries',
             create: 'POST /api/entries',
             update: 'PUT /api/entries/:id',
-            delete: 'DELETE /api/entries/:id'
-        }
+            delete: 'DELETE /api/entries/:id',
+            health: 'GET /health'
+        },
+        database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
     });
 });
 
@@ -79,11 +97,16 @@ app.get('/health', (req, res) => {
 // Get All Entries
 app.get('/api/entries', async (req, res) => {
     try {
+        console.log('Fetching all entries...');
         const entries = await LeaseEntry.find().sort({ _id: -1 });
+        console.log(`Found ${entries.length} entries`);
         res.json(entries);
     } catch (err) {
         console.error('Error fetching entries:', err);
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ 
+            error: 'Failed to fetch entries',
+            details: err.message 
+        });
     }
 });
 
@@ -97,48 +120,63 @@ app.get('/api/entries/:id', async (req, res) => {
         res.json(entry);
     } catch (err) {
         console.error('Error fetching entry:', err);
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ 
+            error: 'Failed to fetch entry',
+            details: err.message 
+        });
     }
 });
 
 // Add New Entry
 app.post('/api/entries', async (req, res) => {
     try {
+        console.log('Received POST request with data:', req.body);
+        
         // Validate required fields
         const requiredFields = ['date', 'carBrand', 'carNumber', 'ownerName', 'ownerMobile', 'cost', 'paidCost'];
-        for (const field of requiredFields) {
-            if (!req.body[field]) {
-                return res.status(400).json({ error: `Missing required field: ${field}` });
-            }
+        const missingFields = requiredFields.filter(field => !req.body[field]);
+        
+        if (missingFields.length > 0) {
+            return res.status(400).json({ 
+                error: `Missing required fields: ${missingFields.join(', ')}` 
+            });
         }
 
         // Count documents for serial number
         const count = await LeaseEntry.countDocuments();
         
-        // Create new entry with calculated fields
-        const newEntryData = {
+        // Create new entry
+        const newEntry = new LeaseEntry({
             serialNo: count + 1,
             ...req.body,
-            // Ensure bakaya is calculated if not provided
+            // Ensure bakaya is calculated
             bakaya: req.body.bakaya || (parseFloat(req.body.cost) - parseFloat(req.body.paidCost))
-        };
+        });
 
-        const newEntry = new LeaseEntry(newEntryData);
+        console.log('Saving new entry:', newEntry);
         await newEntry.save();
+        console.log('Entry saved successfully with ID:', newEntry._id);
         
         res.status(201).json({
+            success: true,
             message: 'Entry created successfully',
             data: newEntry
         });
     } catch (err) {
         console.error('Error creating entry:', err);
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ 
+            error: 'Failed to create entry',
+            details: err.message 
+        });
     }
 });
 
 // Update Existing Entry
 app.put('/api/entries/:id', async (req, res) => {
     try {
+        console.log('Received PUT request for ID:', req.params.id);
+        console.log('Update data:', req.body);
+        
         const entryId = req.params.id;
         
         // Check if entry exists
@@ -160,13 +198,18 @@ app.put('/api/entries/:id', async (req, res) => {
             { new: true, runValidators: true }
         );
         
+        console.log('Entry updated successfully:', updatedEntry._id);
         res.json({
+            success: true,
             message: 'Entry updated successfully',
             data: updatedEntry
         });
     } catch (err) {
         console.error('Error updating entry:', err);
-        res.status(400).json({ error: err.message });
+        res.status(400).json({ 
+            error: 'Failed to update entry',
+            details: err.message 
+        });
     }
 });
 
@@ -177,10 +220,17 @@ app.delete('/api/entries/:id', async (req, res) => {
         if (!deletedEntry) {
             return res.status(404).json({ error: 'Entry not found' });
         }
-        res.json({ message: 'Entry deleted successfully', data: deletedEntry });
+        res.json({ 
+            success: true,
+            message: 'Entry deleted successfully',
+            data: deletedEntry 
+        });
     } catch (err) {
         console.error('Error deleting entry:', err);
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ 
+            error: 'Failed to delete entry',
+            details: err.message 
+        });
     }
 });
 
@@ -192,11 +242,15 @@ app.use('*', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Server error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ 
+        error: 'Internal server error',
+        details: err.message 
+    });
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📊 Health check: http://localhost:${PORT}/health`);
+    console.log(`📊 Health check: https://car-lease-manager.onrender.com/health`);
+    console.log(`📋 API Endpoint: https://car-lease-manager.onrender.com/api/entries`);
 });
