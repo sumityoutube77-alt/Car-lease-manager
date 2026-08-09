@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haryana Car Lease - Professional Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- SheetJS for Excel Download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- jsPDF for PDF Download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     
@@ -40,7 +38,6 @@
             margin: 0 auto;
         }
 
-        /* Professional Login Modal */
         #loginOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -100,14 +97,6 @@
             display: flex;
             align-items: center;
             gap: 15px;
-        }
-
-        .header-logo {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--primary-blue);
         }
 
         header h1 {
@@ -250,9 +239,15 @@
             background: #0369a1;
         }
 
+        .btn-submit:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
         .export-buttons {
             display: flex;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .table-container {
@@ -277,6 +272,8 @@
             background: rgba(2, 132, 199, 0.1);
             color: var(--primary-blue);
             font-weight: 600;
+            position: sticky;
+            top: 0;
         }
 
         tr:hover {
@@ -297,15 +294,39 @@
             font-weight: 600;
         }
         .edit-btn:hover { background: #d97706; }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            animation: spin 0.8s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Professional Login Modal -->
+    <!-- Login Modal -->
     <div id="loginOverlay">
         <div class="login-card">
-            <img src="data:image/jpeg;base64,..." id="fallbackLogo" class="login-logo" alt="Haryana Car Lease Logo" style="display:none;">
-            <!-- Using direct image link or placeholder logic -->
             <div style="font-size: 3rem; margin-bottom: 10px;">🚗</div>
             <h2>Haryana Car Lease</h2>
             <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem;">Secure Management Portal - Please Login</p>
@@ -323,7 +344,7 @@
         </div>
     </div>
 
-    <!-- Main Application Container -->
+    <!-- Main Application -->
     <div class="container app-content" id="appContent">
         <header>
             <div class="brand-container">
@@ -342,7 +363,10 @@
             </div>
         </header>
 
-        <!-- Entry Form Card -->
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message"></div>
+
+        <!-- Entry Form -->
         <div class="glass-card">
             <h2 id="formTitle">Add New Lease Entry</h2>
             <form id="leaseForm" class="form-grid">
@@ -388,7 +412,6 @@
                     <input type="number" id="bakaya" placeholder="Auto-calculated" readonly>
                 </div>
 
-                <!-- Checkbox Verification Ticks -->
                 <div class="checkbox-section">
                     <label class="checkbox-label"><input type="checkbox" id="documentTick"> Document</label>
                     <label class="checkbox-label"><input type="checkbox" id="trcTick"> TRC</label>
@@ -402,7 +425,7 @@
             </form>
         </div>
 
-        <!-- Records Table Card -->
+        <!-- Records Table -->
         <div class="glass-card">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
                 <h2 style="margin-bottom: 0;">All Lease Entries Records</h2>
@@ -436,7 +459,11 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <!-- Data loaded dynamically -->
+                        <tr>
+                            <td colspan="18" style="text-align: center; padding: 20px;">
+                                Loading data...
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -444,7 +471,10 @@
     </div>
 
     <script>
-        const API_URL = 'https://car-lease-manager.onrender.com/api/entries';
+        // API Configuration - Update this to your actual deployed backend URL
+        const API_BASE_URL = 'https://car-lease-manager.onrender.com';
+        const API_URL = `${API_BASE_URL}/api/entries`;
+        
         let globalEntriesData = [];
 
         // Login Handling
@@ -494,41 +524,77 @@
         costInput.addEventListener('input', calculateBakaya);
         paidInput.addEventListener('input', calculateBakaya);
 
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
         // Fetch entries
         async function fetchEntries() {
             try {
                 const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 globalEntriesData = await response.json();
-                const tableBody = document.getElementById('tableBody');
-                tableBody.innerHTML = '';
-
-                globalEntriesData.forEach((entry, index) => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td><button class="edit-btn" onclick="editEntry('${entry._id}')">Edit</button></td>
-                        <td>${index + 1}</td>
-                        <td>${entry.date || ''}</td>
-                        <td>${entry.carBrand || ''}</td>
-                        <td>${entry.carNumber || ''}</td>
-                        <td>${entry.ownerName || ''}</td>
-                        <td>${entry.ownerMobile || ''}</td>
-                        <td>${entry.guarantor || '-'}</td>
-                        <td>${entry.guarantorMobile || '-'}</td>
-                        <td>₹${entry.cost || 0}</td>
-                        <td>₹${entry.paidCost || 0}</td>
-                        <td>₹${entry.bakaya || 0}</td>
-                        <td>${entry.documentTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                        <td>${entry.trcTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                        <td>${entry.rcTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                        <td>${entry.insuranceTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                        <td>${entry.numberPlateTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                        <td>${entry.agreementTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                    `;
-                    tableBody.appendChild(row);
-                });
+                renderTable(globalEntriesData);
             } catch (err) {
                 console.error('Error fetching data:', err);
+                showError('Failed to fetch entries: ' + err.message);
+                document.getElementById('tableBody').innerHTML = `
+                    <tr>
+                        <td colspan="18" style="text-align: center; padding: 20px; color: #dc2626;">
+                            ❌ Error loading data. Please check backend connection.
+                        </td>
+                    </tr>
+                `;
             }
+        }
+
+        function renderTable(entries) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            if (entries.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="18" style="text-align: center; padding: 20px;">
+                            No entries found. Add your first lease entry!
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            entries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><button class="edit-btn" onclick="editEntry('${entry._id}')">Edit</button></td>
+                    <td>${entry.serialNo || index + 1}</td>
+                    <td>${entry.date || ''}</td>
+                    <td>${entry.carBrand || ''}</td>
+                    <td>${entry.carNumber || ''}</td>
+                    <td>${entry.ownerName || ''}</td>
+                    <td>${entry.ownerMobile || ''}</td>
+                    <td>${entry.guarantor || '-'}</td>
+                    <td>${entry.guarantorMobile || '-'}</td>
+                    <td>₹${entry.cost || 0}</td>
+                    <td>₹${entry.paidCost || 0}</td>
+                    <td>₹${entry.bakaya || 0}</td>
+                    <td>${entry.documentTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                    <td>${entry.trcTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                    <td>${entry.rcTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                    <td>${entry.insuranceTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                    <td>${entry.numberPlateTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                    <td>${entry.agreementTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
         }
 
         // Edit Entry Function
@@ -556,13 +622,19 @@
             document.getElementById('agreementTick').checked = !!entry.agreementTick;
 
             document.getElementById('formTitle').innerText = "Edit Lease Entry";
-            document.getElementById('submitBtn').innerText = "Update Entry in Database";
+            document.getElementById('submitBtn').innerHTML = "Update Entry in Database";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Handle Form Submission (Add or Update)
+        // Handle Form Submission
         document.getElementById('leaseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Saving...';
+
             const editingId = document.getElementById('editingId').value;
 
             const formData = {
@@ -573,9 +645,9 @@
                 ownerMobile: document.getElementById('ownerMobile').value,
                 guarantor: document.getElementById('guarantor').value,
                 guarantorMobile: document.getElementById('guarantorMobile').value,
-                cost: parseFloat(document.getElementById('cost').value),
-                paidCost: parseFloat(document.getElementById('paidCost').value),
-                bakaya: parseFloat(document.getElementById('bakaya').value),
+                cost: parseFloat(document.getElementById('cost').value) || 0,
+                paidCost: parseFloat(document.getElementById('paidCost').value) || 0,
+                bakaya: parseFloat(document.getElementById('bakaya').value) || 0,
                 documentTick: document.getElementById('documentTick').checked,
                 trcTick: document.getElementById('trcTick').checked,
                 rcTick: document.getElementById('rcTick').checked,
@@ -586,35 +658,46 @@
 
             try {
                 let response;
+                let url = API_URL;
+                let method = 'POST';
+
                 if(editingId) {
-                    // Update existing entry
-                    response = await fetch(`${API_URL}/${editingId}`, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    });
-                } else {
-                    // Create new entry
-                    response = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    });
+                    url = `${API_URL}/${editingId}`;
+                    method = 'PUT';
                 }
 
+                response = await fetch(url, {
+                    method: method,
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
                 if (response.ok) {
-                    alert(editingId ? 'Entry Updated Successfully!' : 'Entry Saved Successfully!');
+                    alert(editingId ? '✅ Entry Updated Successfully!' : '✅ Entry Saved Successfully!');
                     document.getElementById('leaseForm').reset();
                     document.getElementById('editingId').value = '';
                     document.getElementById('formTitle').innerText = "Add New Lease Entry";
-                    document.getElementById('submitBtn').innerText = "Save Entry to Database";
-                    fetchEntries();
+                    document.getElementById('submitBtn').innerHTML = "Save Entry to Database";
+                    calculateBakaya(); // Reset bakaya
+                    await fetchEntries();
                 } else {
-                    alert('Failed to save/update entry. Please check backend connection.');
+                    showError(result.error || 'Failed to save entry');
+                    submitBtn.innerHTML = originalText;
                 }
             } catch (err) {
                 console.error('Error saving data:', err);
-                alert('Network error while saving.');
+                showError('Network error while saving. Please check your connection.');
+                submitBtn.innerHTML = originalText;
+            } finally {
+                submitBtn.disabled = false;
+                if (!editingId) {
+                    submitBtn.innerHTML = originalText;
+                }
             }
         });
 
@@ -624,10 +707,31 @@
                 alert('No data available to export!');
                 return;
             }
-            const worksheet = XLSX.utils.json_to_sheet(globalEntriesData);
+            
+            const exportData = globalEntriesData.map(item => ({
+                'S.No': item.serialNo || '',
+                'Date': item.date || '',
+                'Car Brand': item.carBrand || '',
+                'Car Number': item.carNumber || '',
+                'Owner Name': item.ownerName || '',
+                'Owner Mobile': item.ownerMobile || '',
+                'Guarantor': item.guarantor || '',
+                'Guarantor Mobile': item.guarantorMobile || '',
+                'Total Cost': item.cost || 0,
+                'Paid Cost': item.paidCost || 0,
+                'Bakaya': item.bakaya || 0,
+                'Document': item.documentTick ? 'Yes' : 'No',
+                'TRC': item.trcTick ? 'Yes' : 'No',
+                'RC': item.rcTick ? 'Yes' : 'No',
+                'Insurance': item.insuranceTick ? 'Yes' : 'No',
+                'Number Plate': item.numberPlateTick ? 'Yes' : 'No',
+                'Agreement': item.agreementTick ? 'Yes' : 'No'
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(exportData);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Haryana Car Lease Records");
-            XLSX.writeFile(workbook, "HaryanaCarLease_Records.xlsx");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Haryana Car Lease");
+            XLSX.writeFile(workbook, `HaryanaCarLease_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
         // PDF Export
@@ -636,10 +740,14 @@
                 alert('No data available to export!');
                 return;
             }
+            
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l', 'mm', 'a4');
             
+            doc.setFontSize(16);
             doc.text("Haryana Car Lease - Records Dashboard", 14, 15);
+            doc.setFontSize(10);
+            doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 22);
             
             const tableData = globalEntriesData.map((item, index) => [
                 index + 1,
@@ -652,20 +760,31 @@
                 item.paidCost || 0,
                 item.bakaya || 0,
                 item.documentTick ? 'Yes' : 'No',
+                item.trcTick ? 'Yes' : 'No',
                 item.rcTick ? 'Yes' : 'No',
                 item.insuranceTick ? 'Yes' : 'No',
+                item.numberPlateTick ? 'Yes' : 'No',
                 item.agreementTick ? 'Yes' : 'No'
             ]);
 
             doc.autoTable({
-                head: [['S.No', 'Date', 'Brand', 'Car No', 'Owner', 'Mobile', 'Cost', 'Paid', 'Bakaya', 'Doc', 'RC', 'Insurance', 'Agreement']],
+                head: [['S.No', 'Date', 'Brand', 'Car No', 'Owner', 'Mobile', 'Cost', 'Paid', 'Bakaya', 'Doc', 'TRC', 'RC', 'Insurance', 'Plate', 'Agreement']],
                 body: tableData,
-                startY: 20,
+                startY: 28,
                 theme: 'grid',
-                styles: { fontSize: 8 }
+                styles: { fontSize: 7 },
+                headStyles: { fillColor: [2, 132, 199] },
+                columnStyles: {
+                    0: { cellWidth: 10 },
+                    1: { cellWidth: 20 },
+                    2: { cellWidth: 20 },
+                    3: { cellWidth: 20 },
+                    4: { cellWidth: 25 },
+                    5: { cellWidth: 20 }
+                }
             });
 
-            doc.save('HaryanaCarLease_Records.pdf');
+            doc.save(`HaryanaCarLease_${new Date().toISOString().split('T')[0]}.pdf`);
         }
     </script>
 </body>
