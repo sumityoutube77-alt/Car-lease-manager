@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// MongoDB Connection (Aapka URI password ke sath set hai)
+// MongoDB Connection
 const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://Carlease:car@lease123@cluster0.bkey1c1.mongodb.net/?appName=Cluster0';
 
 mongoose.connect(MONGO_URI, {
@@ -15,7 +15,7 @@ mongoose.connect(MONGO_URI, {
 }).then(() => console.log('MongoDB Connected Successfully'))
   .catch(err => console.log('DB Connection Error:', err));
 
-// Schema Definition based on your requirements
+// Schema Definition
 const leaseSchema = new mongoose.Schema({
     serialNo: Number,
     date: String,
@@ -38,8 +38,12 @@ const leaseSchema = new mongoose.Schema({
 
 const LeaseEntry = mongoose.model('LeaseEntry', leaseSchema);
 
-// Routes
-// 1. Get All Entries (Latest entry sabse upar dikhegi)
+// Home Route to prevent 'Cannot GET /' error
+app.get('/', (req, res) => {
+    res.send('Car Lease Manager Backend is Live & Running!');
+});
+
+// Get All Entries
 app.get('/api/entries', async (req, res) => {
     try {
         const entries = await LeaseEntry.find().sort({ _id: -1 });
@@ -49,7 +53,7 @@ app.get('/api/entries', async (req, res) => {
     }
 });
 
-// 2. Add New Entry
+// Add New Entry
 app.post('/api/entries', async (req, res) => {
     try {
         const count = await LeaseEntry.countDocuments();
