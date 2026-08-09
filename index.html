@@ -35,6 +35,8 @@
             --shadow-hover: 0 12px 48px rgba(37, 99, 235, 0.2);
             --radius: 20px;
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --delhi-color: #dc2626;
+            --lease-color: #2563eb;
         }
 
         [data-theme="dark"] {
@@ -279,7 +281,7 @@
             text-decoration: underline;
         }
 
-        /* ========== OTP DISPLAY BOX ========== */
+        /* ========== OTP DISPLAY ========== */
         .otp-display-box {
             background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
             padding: 24px;
@@ -295,14 +297,6 @@
             50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.2); }
         }
 
-        .otp-display-box .label {
-            color: #475569;
-            font-size: 0.85rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            letter-spacing: 1px;
-        }
-
         .otp-display-box .otp-code {
             font-size: 48px;
             font-weight: 800;
@@ -314,38 +308,8 @@
             display: inline-block;
             box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
             font-family: 'Courier New', monospace;
-            transition: var(--transition);
         }
 
-        .otp-display-box .otp-code.loading {
-            animation: shimmer 1.2s infinite;
-            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
-            background-size: 200% 100%;
-            color: transparent;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        .otp-display-box .user-info {
-            margin-top: 12px;
-            font-size: 0.85rem;
-            color: #475569;
-        }
-
-        .otp-display-box .user-info strong {
-            color: #1e293b;
-        }
-
-        .otp-display-box .expiry {
-            margin-top: 8px;
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-
-        /* ========== OTP INPUT ========== */
         .otp-input-group {
             display: flex;
             gap: 8px;
@@ -370,11 +334,6 @@
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
             outline: none;
             transform: scale(1.05);
-        }
-
-        .otp-input-group input.filled {
-            border-color: var(--success);
-            background: rgba(16, 185, 129, 0.08);
         }
 
         /* ========== MAIN APP ========== */
@@ -520,7 +479,63 @@
             transform: scale(1.05);
         }
 
-        /* ========== CARDS ========== */
+        /* ========== MODULE SELECTOR ========== */
+        .module-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .module-btn {
+            flex: 1;
+            min-width: 160px;
+            padding: 14px 20px;
+            border: 2px solid rgba(37, 99, 235, 0.15);
+            border-radius: 14px;
+            background: var(--glass-bg);
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            backdrop-filter: blur(10px);
+        }
+
+        .module-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .module-btn.active-lease {
+            border-color: var(--lease-color);
+            background: rgba(37, 99, 235, 0.08);
+            color: var(--lease-color);
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+        }
+
+        .module-btn.active-delhi {
+            border-color: var(--delhi-color);
+            background: rgba(220, 38, 38, 0.08);
+            color: var(--delhi-color);
+            box-shadow: 0 4px 16px rgba(220, 38, 38, 0.15);
+        }
+
+        .module-btn .icon {
+            font-size: 20px;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .module-btn .sub {
+            font-size: 0.65rem;
+            font-weight: 400;
+            display: block;
+            opacity: 0.7;
+        }
+
+        /* ========== GLASS CARDS ========== */
         .glass-card {
             background: var(--glass-bg);
             backdrop-filter: blur(20px);
@@ -564,6 +579,10 @@
             font-weight: 600;
         }
 
+        .card-title .delhi-badge {
+            background: var(--delhi-color);
+        }
+
         /* ========== FORM ========== */
         .form-grid {
             display: grid;
@@ -585,7 +604,7 @@
             letter-spacing: 0.5px;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             padding: 9px 12px;
             border: 2px solid rgba(37, 99, 235, 0.1);
             border-radius: 8px;
@@ -596,7 +615,7 @@
             width: 100%;
         }
 
-        .form-group input:focus {
+        .form-group input:focus, .form-group select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.06);
             outline: none;
@@ -690,6 +709,14 @@
 
         .btn-submit.loading .btn-text {
             display: none;
+        }
+
+        .btn-submit.delhi-btn {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .btn-submit.delhi-btn:hover {
+            box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
         }
 
         @keyframes spin {
@@ -872,6 +899,16 @@
         .empty-state h3 { font-size: 1rem; margin-bottom: 4px; }
         .empty-state p { color: var(--text-secondary); font-size: 0.85rem; }
 
+        /* ========== MODULE HIDE/SHOW ========== */
+        .module-content {
+            display: none;
+        }
+
+        .module-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
         /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
             body { padding: 6px; }
@@ -890,7 +927,8 @@
             th, td { padding: 5px 6px; font-size: 0.65rem; }
             .toast-container { bottom: 10px; right: 10px; left: 10px; max-width: 100%; }
             .otp-input-group input { width: 40px; height: 44px; font-size: 1.1rem; }
-            .otp-display-box .otp-code { font-size: 32px; letter-spacing: 8px; padding: 8px 16px; }
+            .module-selector { flex-direction: column; }
+            .module-btn { min-width: unset; }
         }
 
         @media (max-width: 480px) {
@@ -899,7 +937,6 @@
             .user-avatar { width: 24px; height: 24px; font-size: 10px; }
             .logout-btn { padding: 5px 10px; font-size: 0.65rem; }
             .otp-input-group input { width: 36px; height: 40px; font-size: 1rem; }
-            .otp-display-box .otp-code { font-size: 26px; letter-spacing: 6px; padding: 6px 12px; }
         }
 
         @media (min-width: 769px) {
@@ -911,36 +948,6 @@
         ::-webkit-scrollbar-track { background: rgba(37, 99, 235, 0.05); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
-
-        .skeleton {
-            animation: shimmer 1.5s infinite;
-            background: linear-gradient(90deg, rgba(37, 99, 235, 0.06) 25%, rgba(37, 99, 235, 0.12) 50%, rgba(37, 99, 235, 0.06) 75%);
-            background-size: 200% 100%;
-            border-radius: 6px;
-        }
-
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-
-        /* Copy OTP button */
-        .copy-otp-btn {
-            background: rgba(37, 99, 235, 0.1);
-            border: 1px solid rgba(37, 99, 235, 0.2);
-            color: var(--primary);
-            padding: 6px 14px;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: var(--transition);
-            margin-top: 8px;
-        }
-
-        .copy-otp-btn:hover {
-            background: var(--primary);
-            color: white;
-        }
     </style>
 </head>
 <body>
@@ -1033,24 +1040,20 @@
         </div>
     </div>
 
-    <!-- ==================== OTP VERIFICATION (Dashboard Style) ==================== -->
+    <!-- ==================== OTP VERIFICATION ==================== -->
     <div class="auth-overlay hidden" id="otpOverlay">
         <div class="auth-card">
             <div class="logo">🔐</div>
             <h2>OTP Verification</h2>
             <p class="subtitle" id="otpUserInfo">Enter OTP to reset password</p>
-
-            <!-- ✅ OTP DISPLAY - Dashboard Par Dikhega -->
-            <div class="otp-display-box" id="otpDisplayBox">
-                <div class="label">📱 Your OTP Code</div>
+            <div class="otp-display-box">
+                <div style="font-size:12px; color:#64748b; margin-bottom:8px;">📱 Your OTP Code</div>
                 <div class="otp-code" id="otpCodeDisplay">------</div>
-                <div class="user-info">
+                <div style="margin-top:8px; font-size:0.85rem; color:#475569;">
                     👤 <strong id="otpUserName">---</strong>
                 </div>
-                <div class="expiry">⏱️ Valid for 10 minutes</div>
-                <button class="copy-otp-btn" onclick="copyOTP()">📋 Copy OTP</button>
+                <div style="font-size:0.7rem; color:#94a3b8; margin-top:4px;">⏱️ Valid for 10 minutes</div>
             </div>
-
             <form id="otpForm">
                 <div class="input-group">
                     <label>🔢 Enter OTP</label>
@@ -1107,121 +1110,273 @@
             </div>
         </header>
 
-        <!-- FORM -->
-        <div class="glass-card">
-            <div class="card-header">
-                <div class="card-title">
-                    ✏️ <span id="formTitle">Add New Lease Entry</span>
-                </div>
-                <span style="font-size:0.7rem; color:var(--text-secondary);" id="formHint">Fill all required fields</span>
-            </div>
-            <form id="leaseForm" class="form-grid">
-                <input type="hidden" id="editingId">
-                
-                <div class="form-group">
-                    <label>📅 Date</label>
-                    <input type="date" id="date" required>
-                </div>
-                <div class="form-group">
-                    <label>🚘 Car Brand</label>
-                    <input type="text" id="carBrand" placeholder="e.g. Swift, Dzire" required>
-                </div>
-                <div class="form-group">
-                    <label>🔢 Car Number</label>
-                    <input type="text" id="carNumber" placeholder="DL01ABCD" required>
-                </div>
-                <div class="form-group">
-                    <label>👤 Owner Name</label>
-                    <input type="text" id="ownerName" placeholder="Full name" required>
-                </div>
-                <div class="form-group">
-                    <label>📱 Mobile No</label>
-                    <input type="tel" id="ownerMobile" placeholder="9876543210" required>
-                </div>
-                <div class="form-group">
-                    <label>👤 Guarantor</label>
-                    <input type="text" id="guarantor" placeholder="Guarantor name">
-                </div>
-                <div class="form-group">
-                    <label>📱 G. Mobile</label>
-                    <input type="tel" id="guarantorMobile" placeholder="9876543210">
-                </div>
-                <div class="form-group">
-                    <label>💰 Total Cost (₹)</label>
-                    <input type="number" id="cost" placeholder="50000" required>
-                </div>
-                <div class="form-group">
-                    <label>💵 Paid Cost (₹)</label>
-                    <input type="number" id="paidCost" placeholder="30000" required>
-                </div>
-                <div class="form-group">
-                    <label>📊 Bakaya (₹)</label>
-                    <input type="number" id="bakaya" placeholder="Auto-calculated" readonly>
-                </div>
-
-                <div class="checkbox-grid">
-                    <label class="checkbox-item"><input type="checkbox" id="documentTick"> 📄 Document</label>
-                    <label class="checkbox-item"><input type="checkbox" id="trcTick"> 📋 TRC</label>
-                    <label class="checkbox-item"><input type="checkbox" id="rcTick"> 🚗 RC</label>
-                    <label class="checkbox-item"><input type="checkbox" id="insuranceTick"> 🛡️ Insurance</label>
-                    <label class="checkbox-item"><input type="checkbox" id="numberPlateTick"> 🔢 Number Plate</label>
-                    <label class="checkbox-item"><input type="checkbox" id="agreementTick"> ✍️ Agreement</label>
-                </div>
-
-                <button type="submit" class="btn-submit" id="submitBtn">
-                    <span class="spinner"></span>
-                    <span class="btn-text">💾 Save Entry</span>
-                </button>
-            </form>
+        <!-- ==================== MODULE SELECTOR ==================== -->
+        <div class="module-selector">
+            <button class="module-btn active-lease" id="leaseModuleBtn" onclick="switchModule('lease')">
+                <span class="icon">📝</span>
+                Lease Entry
+                <span class="sub">Add new lease records</span>
+            </button>
+            <button class="module-btn" id="delhiModuleBtn" onclick="switchModule('delhi')">
+                <span class="icon">🏙️</span>
+                Delhi Entry
+                <span class="sub">Delhi cars monthly records</span>
+            </button>
         </div>
 
-        <!-- TABLE -->
-        <div class="glass-card">
-            <div class="card-header">
-                <div class="card-title">
-                    📋 My Lease Entries
-                    <span class="badge-count" id="recordCount">0</span>
+        <!-- ==================== LEASE MODULE ==================== -->
+        <div class="module-content active" id="leaseModule">
+            <!-- Lease Form -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        ✏️ <span id="leaseFormTitle">Add New Lease Entry</span>
+                    </div>
+                    <span style="font-size:0.7rem; color:var(--text-secondary);" id="leaseFormHint">Fill all required fields</span>
                 </div>
-                <div class="export-group">
-                    <button class="btn-export excel" onclick="exportToExcel()">📊 Excel</button>
-                    <button class="btn-export pdf" onclick="exportToPDF()">📄 PDF</button>
+                <form id="leaseForm" class="form-grid">
+                    <input type="hidden" id="leaseEditingId">
+                    
+                    <div class="form-group">
+                        <label>📅 Date</label>
+                        <input type="date" id="leaseDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🚘 Car Brand</label>
+                        <input type="text" id="leaseCarBrand" placeholder="e.g. Swift, Dzire" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🔢 Car Number</label>
+                        <input type="text" id="leaseCarNumber" placeholder="DL01ABCD" required>
+                    </div>
+                    <div class="form-group">
+                        <label>👤 Owner Name</label>
+                        <input type="text" id="leaseOwnerName" placeholder="Full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📱 Mobile No</label>
+                        <input type="tel" id="leaseOwnerMobile" placeholder="9876543210" required>
+                    </div>
+                    <div class="form-group">
+                        <label>👤 Guarantor</label>
+                        <input type="text" id="leaseGuarantor" placeholder="Guarantor name">
+                    </div>
+                    <div class="form-group">
+                        <label>📱 G. Mobile</label>
+                        <input type="tel" id="leaseGuarantorMobile" placeholder="9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label>💰 Total Cost (₹)</label>
+                        <input type="number" id="leaseCost" placeholder="50000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>💵 Paid Cost (₹)</label>
+                        <input type="number" id="leasePaidCost" placeholder="30000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>📊 Bakaya (₹)</label>
+                        <input type="number" id="leaseBakaya" placeholder="Auto-calculated" readonly>
+                    </div>
+
+                    <div class="checkbox-grid">
+                        <label class="checkbox-item"><input type="checkbox" id="leaseDocumentTick"> 📄 Document</label>
+                        <label class="checkbox-item"><input type="checkbox" id="leaseTrcTick"> 📋 TRC</label>
+                        <label class="checkbox-item"><input type="checkbox" id="leaseRcTick"> 🚗 RC</label>
+                        <label class="checkbox-item"><input type="checkbox" id="leaseInsuranceTick"> 🛡️ Insurance</label>
+                        <label class="checkbox-item"><input type="checkbox" id="leaseNumberPlateTick"> 🔢 Number Plate</label>
+                        <label class="checkbox-item"><input type="checkbox" id="leaseAgreementTick"> ✍️ Agreement</label>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="leaseSubmitBtn">
+                        <span class="spinner"></span>
+                        <span class="btn-text">💾 Save Lease Entry</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Lease Table -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        📋 Lease Records
+                        <span class="badge-count" id="leaseRecordCount">0</span>
+                    </div>
+                    <div class="export-group">
+                        <button class="btn-export excel" onclick="exportLeaseToExcel()">📊 Excel</button>
+                        <button class="btn-export pdf" onclick="exportLeaseToPDF()">📄 PDF</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Brand</th>
+                                <th>Car No</th>
+                                <th>Owner</th>
+                                <th>Mobile</th>
+                                <th>Guarantor</th>
+                                <th>G. Mobile</th>
+                                <th>Cost</th>
+                                <th>Paid</th>
+                                <th>Bakaya</th>
+                                <th>Doc</th>
+                                <th>TRC</th>
+                                <th>RC</th>
+                                <th>Insurance</th>
+                                <th>Plate</th>
+                                <th>Agreement</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaseTableBody">
+                            <tr>
+                                <td colspan="18" style="text-align:center; padding:25px;">
+                                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                                        <div class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid rgba(37,99,235,0.2); border-radius:50%; border-top-color:var(--primary); animation:spin 0.8s linear infinite;"></div>
+                                        <span style="color:var(--text-secondary); font-size:0.85rem;">Loading lease records...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Action</th>
-                            <th>#</th>
-                            <th>Date</th>
-                            <th>Brand</th>
-                            <th>Car No</th>
-                            <th>Owner</th>
-                            <th>Mobile</th>
-                            <th>Guarantor</th>
-                            <th>G. Mobile</th>
-                            <th>Cost</th>
-                            <th>Paid</th>
-                            <th>Bakaya</th>
-                            <th>Doc</th>
-                            <th>TRC</th>
-                            <th>RC</th>
-                            <th>Insurance</th>
-                            <th>Plate</th>
-                            <th>Agreement</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr>
-                            <td colspan="18" style="text-align:center; padding:25px;">
-                                <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
-                                    <div class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid rgba(37,99,235,0.2); border-radius:50%; border-top-color:var(--primary); animation:spin 0.8s linear infinite;"></div>
-                                    <span style="color:var(--text-secondary); font-size:0.85rem;">Loading entries...</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        </div>
+
+        <!-- ==================== DELHI MODULE ==================== -->
+        <div class="module-content" id="delhiModule">
+            <!-- Delhi Monthly Summary -->
+            <div class="glass-card" style="background: linear-gradient(135deg, rgba(220,38,38,0.05) 0%, rgba(220,38,38,0.02) 100%); border-color: rgba(220,38,38,0.2);">
+                <div class="card-header">
+                    <div class="card-title" style="color: var(--delhi-color);">
+                        🏙️ Delhi Monthly Summary
+                    </div>
+                    <span style="font-size:0.8rem; color:var(--text-secondary);">
+                        📅 <span id="delhiMonthDisplay">August 2026</span>
+                    </span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 12px;">
+                    <div style="background: rgba(220,38,38,0.06); padding: 12px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Total Cars</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--delhi-color);" id="delhiTotalCars">0</div>
+                    </div>
+                    <div style="background: rgba(16,185,129,0.06); padding: 12px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Total Income</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="delhiTotalIncome">₹0</div>
+                    </div>
+                    <div style="background: rgba(239,68,68,0.06); padding: 12px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Total Expenditure</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--danger);" id="delhiTotalExpenditure">₹0</div>
+                    </div>
+                    <div style="background: rgba(37,99,235,0.06); padding: 12px; border-radius: 10px; text-align: center;">
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Net Profit</div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--primary);" id="delhiNetProfit">₹0</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <input type="month" id="delhiMonthPicker" style="padding: 8px 12px; border: 2px solid rgba(220,38,38,0.15); border-radius: 8px; background: rgba(255,255,255,0.5); font-size: 0.9rem;">
+                    <button onclick="filterDelhiByMonth()" style="padding: 8px 16px; background: var(--delhi-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Filter</button>
+                    <button onclick="resetDelhiFilter()" style="padding: 8px 16px; background: var(--text-secondary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Reset</button>
+                </div>
+            </div>
+
+            <!-- Delhi Form -->
+            <div class="glass-card" style="border-color: rgba(220,38,38,0.2);">
+                <div class="card-header">
+                    <div class="card-title" style="color: var(--delhi-color);">
+                        🏙️ <span id="delhiFormTitle">Add Delhi Car Entry</span>
+                    </div>
+                    <span style="font-size:0.7rem; color:var(--text-secondary);" id="delhiFormHint">📌 Monthly record</span>
+                </div>
+                <form id="delhiForm" class="form-grid">
+                    <input type="hidden" id="delhiEditingId">
+                    
+                    <div class="form-group">
+                        <label>📅 Date</label>
+                        <input type="date" id="delhiDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🚘 Car Name</label>
+                        <input type="text" id="delhiCarName" placeholder="e.g. Swift, Dzire" required>
+                    </div>
+                    <div class="form-group">
+                        <label>🔢 Car Number</label>
+                        <input type="text" id="delhiCarNumber" placeholder="DL01ABCD" required>
+                    </div>
+                    <div class="form-group">
+                        <label>💰 Income (₹)</label>
+                        <input type="number" id="delhiIncome" placeholder="50000" required>
+                    </div>
+                    <div class="form-group">
+                        <label>👤 Driver Name</label>
+                        <input type="text" id="delhiDriverName" placeholder="Driver name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>💸 Expenditure (₹)</label>
+                        <input type="number" id="delhiExpenditure" placeholder="10000" required>
+                    </div>
+
+                    <div class="checkbox-grid">
+                        <label class="checkbox-item"><input type="checkbox" id="delhiDocumentTick"> 📄 Document</label>
+                        <label class="checkbox-item"><input type="checkbox" id="delhiTrcTick"> 📋 TRC</label>
+                        <label class="checkbox-item"><input type="checkbox" id="delhiRcTick"> 🚗 RC</label>
+                        <label class="checkbox-item"><input type="checkbox" id="delhiInsuranceTick"> 🛡️ Insurance</label>
+                        <label class="checkbox-item"><input type="checkbox" id="delhiNumberPlateTick"> 🔢 Number Plate</label>
+                    </div>
+
+                    <button type="submit" class="btn-submit delhi-btn" id="delhiSubmitBtn">
+                        <span class="spinner"></span>
+                        <span class="btn-text">🏙️ Save Delhi Entry</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Delhi Table -->
+            <div class="glass-card" style="border-color: rgba(220,38,38,0.2);">
+                <div class="card-header">
+                    <div class="card-title" style="color: var(--delhi-color);">
+                        🏙️ Delhi Records
+                        <span class="badge-count delhi-badge" id="delhiRecordCount">0</span>
+                    </div>
+                    <div class="export-group">
+                        <button class="btn-export excel" onclick="exportDelhiToExcel()">📊 Excel</button>
+                        <button class="btn-export pdf" onclick="exportDelhiToPDF()">📄 PDF</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Car Name</th>
+                                <th>Car No</th>
+                                <th>Driver</th>
+                                <th>Income</th>
+                                <th>Expenditure</th>
+                                <th>Net</th>
+                                <th>Doc</th>
+                                <th>TRC</th>
+                                <th>RC</th>
+                                <th>Insurance</th>
+                                <th>Plate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="delhiTableBody">
+                            <tr>
+                                <td colspan="14" style="text-align:center; padding:25px;">
+                                    <div style="display:flex; flex-direction:column; align-items:center; gap:6px;">
+                                        <div class="spinner" style="display:inline-block; width:28px; height:28px; border:3px solid rgba(220,38,38,0.2); border-radius:50%; border-top-color:var(--delhi-color); animation:spin 0.8s linear infinite;"></div>
+                                        <span style="color:var(--text-secondary); font-size:0.85rem;">Loading Delhi records...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -1232,12 +1387,15 @@
         // ============================================================
         const API_BASE_URL = 'https://car-lease-manager.onrender.com';
         const API_URL = `${API_BASE_URL}/api/entries`;
+        const DELHI_API_URL = `${API_BASE_URL}/api/delhi`;
         const AUTH_URL = `${API_BASE_URL}/api/auth`;
-        let globalEntriesData = [];
-        let isDarkMode = false;
+        
+        let leaseData = [];
+        let delhiData = [];
         let currentUser = null;
         let sessionTimer = null;
-        let currentOTP = '';
+        let currentModule = 'lease';
+        let delhiFilterMonth = '';
 
         // ============================================================
         // TOAST NOTIFICATIONS
@@ -1260,15 +1418,14 @@
         // THEME TOGGLE
         // ============================================================
         document.getElementById('themeToggle').addEventListener('click', function() {
-            isDarkMode = !isDarkMode;
-            document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
-            this.textContent = isDarkMode ? '☀️' : '🌙';
-            localStorage.setItem('carLeaseTheme', isDarkMode ? 'dark' : 'light');
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+            this.textContent = isDark ? '🌙' : '☀️';
+            localStorage.setItem('carLeaseTheme', isDark ? 'light' : 'dark');
         });
 
         const savedTheme = localStorage.getItem('carLeaseTheme');
         if (savedTheme === 'dark') {
-            isDarkMode = true;
             document.documentElement.setAttribute('data-theme', 'dark');
             document.getElementById('themeToggle').textContent = '☀️';
         }
@@ -1303,37 +1460,14 @@
             document.getElementById('forgotOverlay').classList.add('hidden');
             document.getElementById('otpOverlay').classList.remove('hidden');
             
-            // Show OTP on dashboard
             document.getElementById('otpCodeDisplay').textContent = data.otp;
             document.getElementById('otpUserName').textContent = data.fullName || data.username;
             document.getElementById('otpUserInfo').innerHTML = `🔐 OTP for <strong>${data.fullName || data.username}</strong>`;
             document.getElementById('otpResetUsername').value = data.username;
             document.getElementById('otpStoredCode').value = data.otp;
-            currentOTP = data.otp;
             
-            // Focus first OTP input
             document.querySelector('.otp-input').focus();
-            
-            showToast('📱 OTP generated successfully! Check the box above.', 'info');
-        }
-
-        // Copy OTP
-        function copyOTP() {
-            const otp = document.getElementById('otpCodeDisplay').textContent;
-            if (otp && otp !== '------') {
-                navigator.clipboard.writeText(otp).then(() => {
-                    showToast('📋 OTP copied to clipboard!', 'success');
-                }).catch(() => {
-                    // Fallback
-                    const textArea = document.createElement('textarea');
-                    textArea.value = otp;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    document.execCommand('copy');
-                    textArea.remove();
-                    showToast('📋 OTP copied to clipboard!', 'success');
-                });
-            }
+            showToast('📱 OTP generated! Check the box above.', 'info');
         }
 
         // OTP Input Auto-focus
@@ -1341,17 +1475,6 @@
             input.addEventListener('input', function() {
                 if (this.value.length === 1 && index < arr.length - 1) {
                     arr[index + 1].focus();
-                }
-                // Auto-fill OTP from display
-                const otpCode = document.getElementById('otpCodeDisplay').textContent;
-                if (otpCode && otpCode !== '------') {
-                    const digits = otpCode.split('');
-                    arr.forEach((inp, i) => {
-                        if (digits[i]) {
-                            inp.value = digits[i];
-                            inp.classList.add('filled');
-                        }
-                    });
                 }
             });
             input.addEventListener('keydown', function(e) {
@@ -1400,7 +1523,7 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    showToast('✅ Account created successfully! Please login.', 'success');
+                    showToast('✅ Account created! Please login.', 'success');
                     showLogin();
                     document.getElementById('loginUser').value = username;
                 } else {
@@ -1454,7 +1577,7 @@
         });
 
         // ============================================================
-        // FORGOT PASSWORD - OTP Dashboard Par Show
+        // FORGOT PASSWORD
         // ============================================================
         document.getElementById('forgotForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1474,9 +1597,8 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    // OTP result mein aayega
                     showOTP(result);
-                    showToast('✅ OTP generated! Check the box above.', 'success');
+                    showToast('✅ OTP generated!', 'success');
                 } else {
                     showToast(result.error || 'User not found', 'error');
                 }
@@ -1504,7 +1626,6 @@
             const newPassword = document.getElementById('otpNewPassword').value;
             const confirmPass = document.getElementById('otpConfirmPass').value;
 
-            // Auto-fill OTP check
             const finalOTP = enteredOTP || storedOTP;
 
             if (finalOTP.length !== 6) {
@@ -1532,17 +1653,13 @@
                 const response = await fetch(`${AUTH_URL}/reset-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        username, 
-                        otp: finalOTP, 
-                        newPassword 
-                    })
+                    body: JSON.stringify({ username, otp: finalOTP, newPassword })
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    showToast('✅ Password reset successfully! Please login.', 'success');
+                    showToast('✅ Password reset successfully!', 'success');
                     showLogin();
                     document.getElementById('loginUser').value = username;
                 } else {
@@ -1559,7 +1676,6 @@
         function resendOTP() {
             const username = document.getElementById('otpResetUsername').value;
             if (username) {
-                // Trigger forgot password again
                 document.getElementById('forgotUsername').value = username;
                 document.getElementById('forgotForm').dispatchEvent(new Event('submit'));
             }
@@ -1591,7 +1707,16 @@
             document.getElementById('appContent').style.display = 'block';
             document.getElementById('displayUsername').innerText = username;
             document.getElementById('userAvatar').innerText = username.charAt(0).toUpperCase();
-            fetchEntries();
+            
+            // Set default month for Delhi
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            document.getElementById('delhiMonthPicker').value = `${year}-${month}`;
+            document.getElementById('delhiMonthDisplay').textContent = `${now.toLocaleString('default', { month: 'long' })} ${year}`;
+            
+            fetchLeaseData();
+            fetchDelhiData();
         }
 
         function handleLogout() {
@@ -1631,65 +1756,69 @@
         });
 
         // ============================================================
-        // FORM - Auto-calculate Bakaya
+        // MODULE SWITCHER
         // ============================================================
-        const costInput = document.getElementById('cost');
-        const paidInput = document.getElementById('paidCost');
-        const bakayaInput = document.getElementById('bakaya');
-
-        function calculateBakaya() {
-            const cost = parseFloat(costInput.value) || 0;
-            const paid = parseFloat(paidInput.value) || 0;
-            bakayaInput.value = cost - paid;
+        function switchModule(module) {
+            currentModule = module;
+            
+            // Update buttons
+            document.getElementById('leaseModuleBtn').className = 'module-btn' + (module === 'lease' ? ' active-lease' : '');
+            document.getElementById('delhiModuleBtn').className = 'module-btn' + (module === 'delhi' ? ' active-delhi' : '');
+            
+            // Show/hide modules
+            document.getElementById('leaseModule').className = 'module-content' + (module === 'lease' ? ' active' : '');
+            document.getElementById('delhiModule').className = 'module-content' + (module === 'delhi' ? ' active' : '');
         }
 
-        costInput.addEventListener('input', calculateBakaya);
-        paidInput.addEventListener('input', calculateBakaya);
+        // ============================================================
+        // LEASE - Auto-calculate Bakaya
+        // ============================================================
+        const leaseCost = document.getElementById('leaseCost');
+        const leasePaid = document.getElementById('leasePaidCost');
+        const leaseBakaya = document.getElementById('leaseBakaya');
+
+        function calculateLeaseBakaya() {
+            const cost = parseFloat(leaseCost.value) || 0;
+            const paid = parseFloat(leasePaid.value) || 0;
+            leaseBakaya.value = cost - paid;
+        }
+
+        leaseCost.addEventListener('input', calculateLeaseBakaya);
+        leasePaid.addEventListener('input', calculateLeaseBakaya);
 
         // ============================================================
-        // FETCH ENTRIES
+        // LEASE - CRUD Operations
         // ============================================================
-        async function fetchEntries() {
+        async function fetchLeaseData() {
             try {
                 const token = localStorage.getItem('carLeaseToken');
                 const response = await fetch(API_URL, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                globalEntriesData = await response.json();
-                renderTable(globalEntriesData);
-                document.getElementById('recordCount').textContent = globalEntriesData.length;
+                leaseData = await response.json();
+                renderLeaseTable(leaseData);
+                document.getElementById('leaseRecordCount').textContent = leaseData.length;
             } catch (err) {
-                console.error('Error fetching data:', err);
-                showToast('Failed to load entries: ' + err.message, 'error');
-                document.getElementById('tableBody').innerHTML = `
-                    <tr>
-                        <td colspan="18" style="text-align:center; padding:25px; color:var(--danger);">
-                            ❌ Failed to load data. Please refresh.
-                        </td>
-                    </tr>
+                console.error('Error fetching lease data:', err);
+                showToast('Failed to load lease records: ' + err.message, 'error');
+                document.getElementById('leaseTableBody').innerHTML = `
+                    <tr><td colspan="18" style="text-align:center; padding:25px; color:var(--danger);">❌ Failed to load data.</td></tr>
                 `;
             }
         }
 
-        // ============================================================
-        // RENDER TABLE
-        // ============================================================
-        function renderTable(entries) {
-            const tableBody = document.getElementById('tableBody');
+        function renderLeaseTable(entries) {
+            const tableBody = document.getElementById('leaseTableBody');
             tableBody.innerHTML = '';
 
             if (entries.length === 0) {
                 tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="18">
-                            <div class="empty-state">
-                                <div class="icon">📋</div>
-                                <h3>No entries yet</h3>
-                                <p>Add your first lease entry using the form above.</p>
-                            </div>
-                        </td>
-                    </tr>
+                    <tr><td colspan="18"><div class="empty-state">
+                        <div class="icon">📋</div>
+                        <h3>No lease entries</h3>
+                        <p>Add your first lease entry using the form above.</p>
+                    </div></td></tr>
                 `;
                 return;
             }
@@ -1698,8 +1827,8 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
-                        <button class="btn-edit" onclick="editEntry('${entry._id}')">✏️</button>
-                        <button class="btn-delete" onclick="deleteEntry('${entry._id}')">🗑️</button>
+                        <button class="btn-edit" onclick="editLeaseEntry('${entry._id}')">✏️</button>
+                        <button class="btn-delete" onclick="deleteLeaseEntry('${entry._id}')">🗑️</button>
                     </td>
                     <td>${entry.serialNo || index + 1}</td>
                     <td>${entry.date || '-'}</td>
@@ -1723,92 +1852,80 @@
             });
         }
 
-        // ============================================================
-        // EDIT ENTRY
-        // ============================================================
-        function editEntry(id) {
-            const entry = globalEntriesData.find(item => item._id === id);
+        function editLeaseEntry(id) {
+            const entry = leaseData.find(item => item._id === id);
             if (!entry) return;
 
-            document.getElementById('editingId').value = entry._id;
-            document.getElementById('date').value = entry.date || '';
-            document.getElementById('carBrand').value = entry.carBrand || '';
-            document.getElementById('carNumber').value = entry.carNumber || '';
-            document.getElementById('ownerName').value = entry.ownerName || '';
-            document.getElementById('ownerMobile').value = entry.ownerMobile || '';
-            document.getElementById('guarantor').value = entry.guarantor || '';
-            document.getElementById('guarantorMobile').value = entry.guarantorMobile || '';
-            document.getElementById('cost').value = entry.cost || '';
-            document.getElementById('paidCost').value = entry.paidCost || '';
-            document.getElementById('bakaya').value = entry.bakaya || '';
+            document.getElementById('leaseEditingId').value = entry._id;
+            document.getElementById('leaseDate').value = entry.date || '';
+            document.getElementById('leaseCarBrand').value = entry.carBrand || '';
+            document.getElementById('leaseCarNumber').value = entry.carNumber || '';
+            document.getElementById('leaseOwnerName').value = entry.ownerName || '';
+            document.getElementById('leaseOwnerMobile').value = entry.ownerMobile || '';
+            document.getElementById('leaseGuarantor').value = entry.guarantor || '';
+            document.getElementById('leaseGuarantorMobile').value = entry.guarantorMobile || '';
+            document.getElementById('leaseCost').value = entry.cost || '';
+            document.getElementById('leasePaidCost').value = entry.paidCost || '';
+            document.getElementById('leaseBakaya').value = entry.bakaya || '';
 
-            document.getElementById('documentTick').checked = !!entry.documentTick;
-            document.getElementById('trcTick').checked = !!entry.trcTick;
-            document.getElementById('rcTick').checked = !!entry.rcTick;
-            document.getElementById('insuranceTick').checked = !!entry.insuranceTick;
-            document.getElementById('numberPlateTick').checked = !!entry.numberPlateTick;
-            document.getElementById('agreementTick').checked = !!entry.agreementTick;
+            document.getElementById('leaseDocumentTick').checked = !!entry.documentTick;
+            document.getElementById('leaseTrcTick').checked = !!entry.trcTick;
+            document.getElementById('leaseRcTick').checked = !!entry.rcTick;
+            document.getElementById('leaseInsuranceTick').checked = !!entry.insuranceTick;
+            document.getElementById('leaseNumberPlateTick').checked = !!entry.numberPlateTick;
+            document.getElementById('leaseAgreementTick').checked = !!entry.agreementTick;
 
-            document.getElementById('formTitle').textContent = '✏️ Edit Entry';
-            document.getElementById('submitBtn').querySelector('.btn-text').textContent = '✏️ Update Entry';
-            document.getElementById('formHint').textContent = 'Editing #' + (entry.serialNo || '');
+            document.getElementById('leaseFormTitle').textContent = '✏️ Edit Lease Entry';
+            document.getElementById('leaseSubmitBtn').querySelector('.btn-text').textContent = '✏️ Update Lease';
+            document.getElementById('leaseFormHint').textContent = 'Editing #' + (entry.serialNo || '');
             window.scrollTo({ top: 0, behavior: 'smooth' });
             showToast('✏️ Edit mode - make your changes', 'info');
         }
 
-        // ============================================================
-        // DELETE ENTRY
-        // ============================================================
-        async function deleteEntry(id) {
-            if (!confirm('Are you sure you want to delete this entry?')) return;
-
+        async function deleteLeaseEntry(id) {
+            if (!confirm('Delete this lease entry?')) return;
             try {
                 const token = localStorage.getItem('carLeaseToken');
                 const response = await fetch(`${API_URL}/${id}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
-
                 if (response.ok) {
-                    showToast('🗑️ Entry deleted successfully!', 'success');
-                    await fetchEntries();
+                    showToast('🗑️ Lease entry deleted!', 'success');
+                    await fetchLeaseData();
                 } else {
-                    showToast('Failed to delete entry', 'error');
+                    showToast('Failed to delete', 'error');
                 }
             } catch (err) {
                 showToast('Network error: ' + err.message, 'error');
             }
         }
 
-        // ============================================================
-        // SUBMIT FORM
-        // ============================================================
         document.getElementById('leaseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-
-            const submitBtn = document.getElementById('submitBtn');
-            const editingId = document.getElementById('editingId').value;
+            const submitBtn = document.getElementById('leaseSubmitBtn');
+            const editingId = document.getElementById('leaseEditingId').value;
 
             submitBtn.classList.add('loading');
             submitBtn.disabled = true;
 
             const formData = {
-                date: document.getElementById('date').value,
-                carBrand: document.getElementById('carBrand').value,
-                carNumber: document.getElementById('carNumber').value,
-                ownerName: document.getElementById('ownerName').value,
-                ownerMobile: document.getElementById('ownerMobile').value,
-                guarantor: document.getElementById('guarantor').value,
-                guarantorMobile: document.getElementById('guarantorMobile').value,
-                cost: parseFloat(document.getElementById('cost').value) || 0,
-                paidCost: parseFloat(document.getElementById('paidCost').value) || 0,
-                bakaya: parseFloat(document.getElementById('bakaya').value) || 0,
-                documentTick: document.getElementById('documentTick').checked,
-                trcTick: document.getElementById('trcTick').checked,
-                rcTick: document.getElementById('rcTick').checked,
-                insuranceTick: document.getElementById('insuranceTick').checked,
-                numberPlateTick: document.getElementById('numberPlateTick').checked,
-                agreementTick: document.getElementById('agreementTick').checked
+                date: document.getElementById('leaseDate').value,
+                carBrand: document.getElementById('leaseCarBrand').value,
+                carNumber: document.getElementById('leaseCarNumber').value,
+                ownerName: document.getElementById('leaseOwnerName').value,
+                ownerMobile: document.getElementById('leaseOwnerMobile').value,
+                guarantor: document.getElementById('leaseGuarantor').value,
+                guarantorMobile: document.getElementById('leaseGuarantorMobile').value,
+                cost: parseFloat(document.getElementById('leaseCost').value) || 0,
+                paidCost: parseFloat(document.getElementById('leasePaidCost').value) || 0,
+                bakaya: parseFloat(document.getElementById('leaseBakaya').value) || 0,
+                documentTick: document.getElementById('leaseDocumentTick').checked,
+                trcTick: document.getElementById('leaseTrcTick').checked,
+                rcTick: document.getElementById('leaseRcTick').checked,
+                insuranceTick: document.getElementById('leaseInsuranceTick').checked,
+                numberPlateTick: document.getElementById('leaseNumberPlateTick').checked,
+                agreementTick: document.getElementById('leaseAgreementTick').checked
             };
 
             try {
@@ -1829,14 +1946,13 @@
 
                 if (response.ok) {
                     showToast(result.message || (editingId ? '✅ Updated!' : '✅ Saved!'), 'success');
-                    
                     document.getElementById('leaseForm').reset();
-                    document.getElementById('editingId').value = '';
-                    document.getElementById('formTitle').textContent = 'Add New Lease Entry';
-                    document.getElementById('submitBtn').querySelector('.btn-text').textContent = '💾 Save Entry';
-                    document.getElementById('formHint').textContent = 'Fill all required fields';
-                    calculateBakaya();
-                    await fetchEntries();
+                    document.getElementById('leaseEditingId').value = '';
+                    document.getElementById('leaseFormTitle').textContent = 'Add New Lease Entry';
+                    document.getElementById('leaseSubmitBtn').querySelector('.btn-text').textContent = '💾 Save Lease Entry';
+                    document.getElementById('leaseFormHint').textContent = 'Fill all required fields';
+                    calculateLeaseBakaya();
+                    await fetchLeaseData();
                 } else {
                     showToast(result.error || 'Failed to save', 'error');
                 }
@@ -1849,14 +1965,226 @@
         });
 
         // ============================================================
-        // EXPORT FUNCTIONS
+        // DELHI - CRUD Operations
         // ============================================================
-        function exportToExcel() {
-            if (globalEntriesData.length === 0) {
-                showToast('No data to export!', 'error');
+        async function fetchDelhiData() {
+            try {
+                const token = localStorage.getItem('carLeaseToken');
+                const response = await fetch(DELHI_API_URL, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                delhiData = await response.json();
+                renderDelhiTable(delhiData);
+                updateDelhiSummary(delhiData);
+                document.getElementById('delhiRecordCount').textContent = delhiData.length;
+            } catch (err) {
+                console.error('Error fetching Delhi data:', err);
+                showToast('Failed to load Delhi records: ' + err.message, 'error');
+                document.getElementById('delhiTableBody').innerHTML = `
+                    <tr><td colspan="14" style="text-align:center; padding:25px; color:var(--danger);">❌ Failed to load data.</td></tr>
+                `;
+            }
+        }
+
+        function renderDelhiTable(entries) {
+            const tableBody = document.getElementById('delhiTableBody');
+            tableBody.innerHTML = '';
+
+            if (entries.length === 0) {
+                tableBody.innerHTML = `
+                    <tr><td colspan="14"><div class="empty-state">
+                        <div class="icon">🏙️</div>
+                        <h3>No Delhi entries</h3>
+                        <p>Add your first Delhi car entry using the form above.</p>
+                    </div></td></tr>
+                `;
                 return;
             }
-            const exportData = globalEntriesData.map(item => ({
+
+            entries.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                const net = (entry.income || 0) - (entry.expenditure || 0);
+                row.innerHTML = `
+                    <td>
+                        <button class="btn-edit" onclick="editDelhiEntry('${entry._id}')">✏️</button>
+                        <button class="btn-delete" onclick="deleteDelhiEntry('${entry._id}')">🗑️</button>
+                    </td>
+                    <td>${index + 1}</td>
+                    <td>${entry.date || '-'}</td>
+                    <td><strong>${entry.carName || '-'}</strong></td>
+                    <td>${entry.carNumber || '-'}</td>
+                    <td>${entry.driverName || '-'}</td>
+                    <td>₹${entry.income || 0}</td>
+                    <td>₹${entry.expenditure || 0}</td>
+                    <td style="color: ${net >= 0 ? 'var(--success)' : 'var(--danger)'}; font-weight: 700;">₹${net}</td>
+                    <td>${entry.documentTick ? '✅' : '❌'}</td>
+                    <td>${entry.trcTick ? '✅' : '❌'}</td>
+                    <td>${entry.rcTick ? '✅' : '❌'}</td>
+                    <td>${entry.insuranceTick ? '✅' : '❌'}</td>
+                    <td>${entry.numberPlateTick ? '✅' : '❌'}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateDelhiSummary(entries) {
+            let totalCars = entries.length;
+            let totalIncome = 0;
+            let totalExpenditure = 0;
+
+            entries.forEach(entry => {
+                totalIncome += entry.income || 0;
+                totalExpenditure += entry.expenditure || 0;
+            });
+
+            document.getElementById('delhiTotalCars').textContent = totalCars;
+            document.getElementById('delhiTotalIncome').textContent = `₹${totalIncome}`;
+            document.getElementById('delhiTotalExpenditure').textContent = `₹${totalExpenditure}`;
+            document.getElementById('delhiNetProfit').textContent = `₹${totalIncome - totalExpenditure}`;
+        }
+
+        function filterDelhiByMonth() {
+            const month = document.getElementById('delhiMonthPicker').value;
+            if (!month) return;
+            
+            const [year, monthNum] = month.split('-');
+            const filtered = delhiData.filter(entry => {
+                if (!entry.date) return false;
+                const entryDate = new Date(entry.date);
+                return entryDate.getFullYear() === parseInt(year) && 
+                       (entryDate.getMonth() + 1) === parseInt(monthNum);
+            });
+            
+            renderDelhiTable(filtered);
+            updateDelhiSummary(filtered);
+            
+            const monthName = new Date(parseInt(year), parseInt(monthNum) - 1).toLocaleString('default', { month: 'long' });
+            document.getElementById('delhiMonthDisplay').textContent = `${monthName} ${year}`;
+            showToast(`📅 Showing ${filtered.length} records for ${monthName} ${year}`, 'info');
+        }
+
+        function resetDelhiFilter() {
+            const now = new Date();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            document.getElementById('delhiMonthPicker').value = `${year}-${month}`;
+            document.getElementById('delhiMonthDisplay').textContent = `${now.toLocaleString('default', { month: 'long' })} ${year}`;
+            renderDelhiTable(delhiData);
+            updateDelhiSummary(delhiData);
+            showToast('📋 Showing all records', 'info');
+        }
+
+        function editDelhiEntry(id) {
+            const entry = delhiData.find(item => item._id === id);
+            if (!entry) return;
+
+            document.getElementById('delhiEditingId').value = entry._id;
+            document.getElementById('delhiDate').value = entry.date || '';
+            document.getElementById('delhiCarName').value = entry.carName || '';
+            document.getElementById('delhiCarNumber').value = entry.carNumber || '';
+            document.getElementById('delhiIncome').value = entry.income || '';
+            document.getElementById('delhiDriverName').value = entry.driverName || '';
+            document.getElementById('delhiExpenditure').value = entry.expenditure || '';
+
+            document.getElementById('delhiDocumentTick').checked = !!entry.documentTick;
+            document.getElementById('delhiTrcTick').checked = !!entry.trcTick;
+            document.getElementById('delhiRcTick').checked = !!entry.rcTick;
+            document.getElementById('delhiInsuranceTick').checked = !!entry.insuranceTick;
+            document.getElementById('delhiNumberPlateTick').checked = !!entry.numberPlateTick;
+
+            document.getElementById('delhiFormTitle').textContent = '✏️ Edit Delhi Entry';
+            document.getElementById('delhiSubmitBtn').querySelector('.btn-text').textContent = '✏️ Update Delhi Entry';
+            document.getElementById('delhiFormHint').textContent = 'Editing entry #' + (delhiData.indexOf(entry) + 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast('✏️ Edit mode - make your changes', 'info');
+        }
+
+        async function deleteDelhiEntry(id) {
+            if (!confirm('Delete this Delhi entry?')) return;
+            try {
+                const token = localStorage.getItem('carLeaseToken');
+                const response = await fetch(`${DELHI_API_URL}/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (response.ok) {
+                    showToast('🗑️ Delhi entry deleted!', 'success');
+                    await fetchDelhiData();
+                } else {
+                    showToast('Failed to delete', 'error');
+                }
+            } catch (err) {
+                showToast('Network error: ' + err.message, 'error');
+            }
+        }
+
+        document.getElementById('delhiForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const submitBtn = document.getElementById('delhiSubmitBtn');
+            const editingId = document.getElementById('delhiEditingId').value;
+
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            const formData = {
+                date: document.getElementById('delhiDate').value,
+                carName: document.getElementById('delhiCarName').value,
+                carNumber: document.getElementById('delhiCarNumber').value,
+                income: parseFloat(document.getElementById('delhiIncome').value) || 0,
+                driverName: document.getElementById('delhiDriverName').value,
+                expenditure: parseFloat(document.getElementById('delhiExpenditure').value) || 0,
+                documentTick: document.getElementById('delhiDocumentTick').checked,
+                trcTick: document.getElementById('delhiTrcTick').checked,
+                rcTick: document.getElementById('delhiRcTick').checked,
+                insuranceTick: document.getElementById('delhiInsuranceTick').checked,
+                numberPlateTick: document.getElementById('delhiNumberPlateTick').checked
+            };
+
+            try {
+                const token = localStorage.getItem('carLeaseToken');
+                const url = editingId ? `${DELHI_API_URL}/${editingId}` : DELHI_API_URL;
+                const method = editingId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showToast(result.message || (editingId ? '✅ Updated!' : '✅ Saved!'), 'success');
+                    document.getElementById('delhiForm').reset();
+                    document.getElementById('delhiEditingId').value = '';
+                    document.getElementById('delhiFormTitle').textContent = 'Add Delhi Car Entry';
+                    document.getElementById('delhiSubmitBtn').querySelector('.btn-text').textContent = '🏙️ Save Delhi Entry';
+                    document.getElementById('delhiFormHint').textContent = '📌 Monthly record';
+                    await fetchDelhiData();
+                } else {
+                    showToast(result.error || 'Failed to save', 'error');
+                }
+            } catch (err) {
+                showToast('Network error: ' + err.message, 'error');
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // ============================================================
+        // EXPORT FUNCTIONS - LEASE
+        // ============================================================
+        function exportLeaseToExcel() {
+            if (leaseData.length === 0) {
+                showToast('No lease data to export!', 'error');
+                return;
+            }
+            const exportData = leaseData.map(item => ({
                 'S.No': item.serialNo || '',
                 'Date': item.date || '',
                 'Car Brand': item.carBrand || '',
@@ -1878,42 +2206,31 @@
 
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Car Lease");
-            XLSX.writeFile(wb, `CarLease_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast(`📊 Exported ${exportData.length} records!`, 'success');
+            XLSX.utils.book_append_sheet(wb, ws, "Lease Records");
+            XLSX.writeFile(wb, `Lease_Records_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showToast(`📊 Exported ${exportData.length} lease records!`, 'success');
         }
 
-        function exportToPDF() {
-            if (globalEntriesData.length === 0) {
-                showToast('No data to export!', 'error');
+        function exportLeaseToPDF() {
+            if (leaseData.length === 0) {
+                showToast('No lease data to export!', 'error');
                 return;
             }
-
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l', 'mm', 'a4');
-
             doc.setFontSize(16);
-            doc.text('Haryana Car Lease - Records', 14, 18);
+            doc.text('Haryana Car Lease - Lease Records', 14, 18);
             doc.setFontSize(9);
             doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
-            doc.text(`Total: ${globalEntriesData.length} records`, 14, 31);
+            doc.text(`Total: ${leaseData.length} records`, 14, 31);
 
-            const tableData = globalEntriesData.map((item, i) => [
-                i + 1,
-                item.date || '',
-                item.carBrand || '',
-                item.carNumber || '',
-                item.ownerName || '',
-                item.ownerMobile || '',
-                item.cost || 0,
-                item.paidCost || 0,
-                item.bakaya || 0,
-                item.documentTick ? 'Yes' : 'No',
-                item.trcTick ? 'Yes' : 'No',
-                item.rcTick ? 'Yes' : 'No',
-                item.insuranceTick ? 'Yes' : 'No',
-                item.numberPlateTick ? 'Yes' : 'No',
-                item.agreementTick ? 'Yes' : 'No'
+            const tableData = leaseData.map((item, i) => [
+                i + 1, item.date || '', item.carBrand || '', item.carNumber || '',
+                item.ownerName || '', item.ownerMobile || '', item.cost || 0,
+                item.paidCost || 0, item.bakaya || 0,
+                item.documentTick ? 'Yes' : 'No', item.trcTick ? 'Yes' : 'No',
+                item.rcTick ? 'Yes' : 'No', item.insuranceTick ? 'Yes' : 'No',
+                item.numberPlateTick ? 'Yes' : 'No', item.agreementTick ? 'Yes' : 'No'
             ]);
 
             doc.autoTable({
@@ -1924,9 +2241,72 @@
                 styles: { fontSize: 6 },
                 headStyles: { fillColor: [37, 99, 235] }
             });
+            doc.save(`Lease_Records_${new Date().toISOString().split('T')[0]}.pdf`);
+            showToast(`📄 Exported ${leaseData.length} lease records!`, 'success');
+        }
 
-            doc.save(`CarLease_${new Date().toISOString().split('T')[0]}.pdf`);
-            showToast(`📄 Exported ${globalEntriesData.length} records!`, 'success');
+        // ============================================================
+        // EXPORT FUNCTIONS - DELHI
+        // ============================================================
+        function exportDelhiToExcel() {
+            if (delhiData.length === 0) {
+                showToast('No Delhi data to export!', 'error');
+                return;
+            }
+            const exportData = delhiData.map(item => ({
+                'Date': item.date || '',
+                'Car Name': item.carName || '',
+                'Car Number': item.carNumber || '',
+                'Driver Name': item.driverName || '',
+                'Income': item.income || 0,
+                'Expenditure': item.expenditure || 0,
+                'Net': (item.income || 0) - (item.expenditure || 0),
+                'Document': item.documentTick ? 'Yes' : 'No',
+                'TRC': item.trcTick ? 'Yes' : 'No',
+                'RC': item.rcTick ? 'Yes' : 'No',
+                'Insurance': item.insuranceTick ? 'Yes' : 'No',
+                'Number Plate': item.numberPlateTick ? 'Yes' : 'No'
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Delhi Records");
+            XLSX.writeFile(wb, `Delhi_Records_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showToast(`📊 Exported ${exportData.length} Delhi records!`, 'success');
+        }
+
+        function exportDelhiToPDF() {
+            if (delhiData.length === 0) {
+                showToast('No Delhi data to export!', 'error');
+                return;
+            }
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('l', 'mm', 'a4');
+            doc.setFontSize(16);
+            doc.text('Haryana Car Lease - Delhi Records', 14, 18);
+            doc.setFontSize(9);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
+            doc.text(`Total: ${delhiData.length} records`, 14, 31);
+
+            const tableData = delhiData.map((item, i) => [
+                i + 1, item.date || '', item.carName || '', item.carNumber || '',
+                item.driverName || '', item.income || 0, item.expenditure || 0,
+                (item.income || 0) - (item.expenditure || 0),
+                item.documentTick ? 'Yes' : 'No', item.trcTick ? 'Yes' : 'No',
+                item.rcTick ? 'Yes' : 'No', item.insuranceTick ? 'Yes' : 'No',
+                item.numberPlateTick ? 'Yes' : 'No'
+            ]);
+
+            doc.autoTable({
+                head: [['#', 'Date', 'Car Name', 'Car No', 'Driver', 'Income', 'Expense', 'Net', 'Doc', 'TRC', 'RC', 'Ins', 'Plate']],
+                body: tableData,
+                startY: 35,
+                theme: 'grid',
+                styles: { fontSize: 6 },
+                headStyles: { fillColor: [220, 38, 38] }
+            });
+            doc.save(`Delhi_Records_${new Date().toISOString().split('T')[0]}.pdf`);
+            showToast(`📄 Exported ${delhiData.length} Delhi records!`, 'success');
         }
 
         // ============================================================
