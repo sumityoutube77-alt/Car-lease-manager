@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Car Lease Management - Professional Dashboard</title>
+    <title>Haryana Car Lease - Professional Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- SheetJS for Excel Download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -15,7 +15,7 @@
         :root {
             --primary-blue: #0284c7;
             --light-blue-bg: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
-            --glass-bg: rgba(255, 255, 255, 0.82);
+            --glass-bg: rgba(255, 255, 255, 0.85);
             --glass-border: rgba(255, 255, 255, 0.6);
             --text-dark: #0f172a;
             --text-muted: #475569;
@@ -63,17 +63,13 @@
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
-        .login-icon {
-            width: 60px;
-            height: 60px;
-            background: #e0f2fe;
-            color: var(--primary-blue);
+        .login-logo {
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
+            object-fit: cover;
             margin: 0 auto 15px auto;
+            border: 2px solid var(--primary-blue);
             box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
         }
 
@@ -98,6 +94,20 @@
             border: 1px solid var(--glass-border);
             margin-bottom: 30px;
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-blue);
         }
 
         header h1 {
@@ -275,6 +285,18 @@
 
         .badge-yes { color: #16a34a; font-weight: bold; }
         .badge-no { color: #dc2626; font-weight: bold; }
+
+        .edit-btn {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .edit-btn:hover { background: #d97706; }
     </style>
 </head>
 <body>
@@ -282,13 +304,15 @@
     <!-- Professional Login Modal -->
     <div id="loginOverlay">
         <div class="login-card">
-            <div class="login-icon">🚗</div>
-            <h2>Mousa Ji Enterprise</h2>
-            <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem;">Secure Car Lease Portal - Please Login</p>
+            <img src="data:image/jpeg;base64,..." id="fallbackLogo" class="login-logo" alt="Haryana Car Lease Logo" style="display:none;">
+            <!-- Using direct image link or placeholder logic -->
+            <div style="font-size: 3rem; margin-bottom: 10px;">🚗</div>
+            <h2>Haryana Car Lease</h2>
+            <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem;">Secure Management Portal - Please Login</p>
             <form id="loginForm">
                 <div class="input-group" style="margin-bottom: 15px; text-align: left;">
                     <label>Account / User Name</label>
-                    <input type="text" id="loginUser" placeholder="e.g. MousaJi / Manager" required>
+                    <input type="text" id="loginUser" placeholder="Enter username" required>
                 </div>
                 <div class="input-group" style="margin-bottom: 20px; text-align: left;">
                     <label>Security Password</label>
@@ -302,9 +326,12 @@
     <!-- Main Application Container -->
     <div class="container app-content" id="appContent">
         <header>
-            <div>
-                <h1>Car Lease Management</h1>
-                <p>Mousa Ji Enterprise - Professional Record Dashboard</p>
+            <div class="brand-container">
+                <div style="font-size: 2.5rem;">🚗</div>
+                <div>
+                    <h1>Haryana Car Lease</h1>
+                    <p>Professional Record & Fleet Dashboard</p>
+                </div>
             </div>
             <div class="user-profile-badge">
                 <div class="user-info">
@@ -317,8 +344,9 @@
 
         <!-- Entry Form Card -->
         <div class="glass-card">
-            <h2>Add New Lease Entry</h2>
+            <h2 id="formTitle">Add New Lease Entry</h2>
             <form id="leaseForm" class="form-grid">
+                <input type="hidden" id="editingId">
                 <div class="input-group">
                     <label>Date</label>
                     <input type="date" id="date" required>
@@ -370,7 +398,7 @@
                     <label class="checkbox-label"><input type="checkbox" id="agreementTick"> Agreement</label>
                 </div>
 
-                <button type="submit" class="btn-submit">Save Entry to Database</button>
+                <button type="submit" class="btn-submit" id="submitBtn">Save Entry to Database</button>
             </form>
         </div>
 
@@ -387,6 +415,7 @@
                 <table>
                     <thead>
                         <tr>
+                            <th>Action</th>
                             <th>S.No</th>
                             <th>Date</th>
                             <th>Brand</th>
@@ -476,6 +505,7 @@
                 globalEntriesData.forEach((entry, index) => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td><button class="edit-btn" onclick="editEntry('${entry._id}')">Edit</button></td>
                         <td>${index + 1}</td>
                         <td>${entry.date || ''}</td>
                         <td>${entry.carBrand || ''}</td>
@@ -501,13 +531,43 @@
             }
         }
 
-        // Handle Form Submission
+        // Edit Entry Function
+        function editEntry(id) {
+            const entry = globalEntriesData.find(item => item._id === id);
+            if(!entry) return;
+
+            document.getElementById('editingId').value = entry._id;
+            document.getElementById('date').value = entry.date || '';
+            document.getElementById('carBrand').value = entry.carBrand || '';
+            document.getElementById('carNumber').value = entry.carNumber || '';
+            document.getElementById('ownerName').value = entry.ownerName || '';
+            document.getElementById('ownerMobile').value = entry.ownerMobile || '';
+            document.getElementById('guarantor').value = entry.guarantor || '';
+            document.getElementById('guarantorMobile').value = entry.guarantorMobile || '';
+            document.getElementById('cost').value = entry.cost || '';
+            document.getElementById('paidCost').value = entry.paidCost || '';
+            document.getElementById('bakaya').value = entry.bakaya || '';
+            
+            document.getElementById('documentTick').checked = !!entry.documentTick;
+            document.getElementById('trcTick').checked = !!entry.trcTick;
+            document.getElementById('rcTick').checked = !!entry.rcTick;
+            document.getElementById('insuranceTick').checked = !!entry.insuranceTick;
+            document.getElementById('numberPlateTick').checked = !!entry.numberPlateTick;
+            document.getElementById('agreementTick').checked = !!entry.agreementTick;
+
+            document.getElementById('formTitle').innerText = "Edit Lease Entry";
+            document.getElementById('submitBtn').innerText = "Update Entry in Database";
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Handle Form Submission (Add or Update)
         document.getElementById('leaseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const editingId = document.getElementById('editingId').value;
 
             const formData = {
                 date: document.getElementById('date').value,
-                carBrand: document.getElementById('carBrand.value') || document.getElementById('carBrand').value,
+                carBrand: document.getElementById('carBrand').value,
                 carNumber: document.getElementById('carNumber').value,
                 ownerName: document.getElementById('ownerName').value,
                 ownerMobile: document.getElementById('ownerMobile').value,
@@ -525,18 +585,32 @@
             };
 
             try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                });
+                let response;
+                if(editingId) {
+                    // Update existing entry
+                    response = await fetch(`${API_URL}/${editingId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                } else {
+                    // Create new entry
+                    response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                }
 
                 if (response.ok) {
-                    alert('Entry Saved Successfully!');
+                    alert(editingId ? 'Entry Updated Successfully!' : 'Entry Saved Successfully!');
                     document.getElementById('leaseForm').reset();
+                    document.getElementById('editingId').value = '';
+                    document.getElementById('formTitle').innerText = "Add New Lease Entry";
+                    document.getElementById('submitBtn').innerText = "Save Entry to Database";
                     fetchEntries();
                 } else {
-                    alert('Failed to save entry. Please check backend connection.');
+                    alert('Failed to save/update entry. Please check backend connection.');
                 }
             } catch (err) {
                 console.error('Error saving data:', err);
@@ -552,8 +626,8 @@
             }
             const worksheet = XLSX.utils.json_to_sheet(globalEntriesData);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Car Lease Records");
-            XLSX.writeFile(workbook, "CarLease_Records.xlsx");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Haryana Car Lease Records");
+            XLSX.writeFile(workbook, "HaryanaCarLease_Records.xlsx");
         }
 
         // PDF Export
@@ -565,7 +639,7 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l', 'mm', 'a4');
             
-            doc.text("Mousa Ji Enterprise - Car Lease Records", 14, 15);
+            doc.text("Haryana Car Lease - Records Dashboard", 14, 15);
             
             const tableData = globalEntriesData.map((item, index) => [
                 index + 1,
@@ -591,7 +665,7 @@
                 styles: { fontSize: 8 }
             });
 
-            doc.save('CarLease_Records.pdf');
+            doc.save('HaryanaCarLease_Records.pdf');
         }
     </script>
 </body>
