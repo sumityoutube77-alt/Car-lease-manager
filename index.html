@@ -15,7 +15,7 @@
         :root {
             --primary-blue: #0284c7;
             --light-blue-bg: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
-            --glass-bg: rgba(255, 255, 255, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.82);
             --glass-border: rgba(255, 255, 255, 0.6);
             --text-dark: #0f172a;
             --text-muted: #475569;
@@ -40,12 +40,12 @@
             margin: 0 auto;
         }
 
-        /* Login Modal / Section */
+        /* Professional Login Modal */
         #loginOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -53,52 +53,95 @@
         }
 
         .login-card {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 30px;
-            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 35px;
+            border-radius: 20px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 420px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .login-icon {
+            width: 60px;
+            height: 60px;
+            background: #e0f2fe;
+            color: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 15px auto;
+            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
         }
 
         .login-card h2 {
             color: var(--primary-blue);
-            margin-bottom: 20px;
+            margin-bottom: 5px;
+            font-size: 1.5rem;
         }
 
         .app-content {
-            display: none; /* Hide until logged in */
+            display: none;
         }
 
         header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            padding: 20px 30px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
             margin-bottom: 30px;
-            position: relative;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
         }
 
         header h1 {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             color: var(--primary-blue);
             font-weight: 700;
         }
 
         header p {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .user-profile-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info .name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-dark);
         }
 
         .logout-btn {
-            position: absolute;
-            right: 0;
-            top: 0;
-            background: #dc2626;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 6px;
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fca5a5;
+            padding: 8px 16px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+            color: white;
         }
 
         .glass-card {
@@ -200,7 +243,6 @@
         .export-buttons {
             display: flex;
             gap: 15px;
-            margin-bottom: 20px;
         }
 
         .table-container {
@@ -237,21 +279,22 @@
 </head>
 <body>
 
-    <!-- Login Screen Modal -->
+    <!-- Professional Login Modal -->
     <div id="loginOverlay">
         <div class="login-card">
+            <div class="login-icon">🚗</div>
             <h2>Mousa Ji Enterprise</h2>
-            <p style="margin-bottom: 20px; color: var(--text-muted);">Please login to manage entries</p>
+            <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem;">Secure Car Lease Portal - Please Login</p>
             <form id="loginForm">
-                <div class="input-group" style="margin-bottom: 15px;">
-                    <label>Username / Account ID</label>
-                    <input type="text" id="loginUser" placeholder="Enter username" required>
+                <div class="input-group" style="margin-bottom: 15px; text-align: left;">
+                    <label>Account / User Name</label>
+                    <input type="text" id="loginUser" placeholder="e.g. MousaJi / Manager" required>
                 </div>
-                <div class="input-group" style="margin-bottom: 20px;">
-                    <label>Password</label>
+                <div class="input-group" style="margin-bottom: 20px; text-align: left;">
+                    <label>Security Password</label>
                     <input type="password" id="loginPass" placeholder="Enter password" required>
                 </div>
-                <button type="submit" class="btn-submit" style="width: 100%;">Login to Dashboard</button>
+                <button type="submit" class="btn-submit" style="width: 100%;">Secure Login</button>
             </form>
         </div>
     </div>
@@ -259,9 +302,17 @@
     <!-- Main Application Container -->
     <div class="container app-content" id="appContent">
         <header>
-            <h1>Car Lease Management</h1>
-            <p>Professional Record Dashboard</p>
-            <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            <div>
+                <h1>Car Lease Management</h1>
+                <p>Mousa Ji Enterprise - Professional Record Dashboard</p>
+            </div>
+            <div class="user-profile-badge">
+                <div class="user-info">
+                    <div class="name" id="displayUsername">User</div>
+                    <div style="font-size: 0.75rem; color: #16a34a;">● Active Session</div>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
         </header>
 
         <!-- Entry Form Card -->
@@ -356,7 +407,7 @@
                         </tr>
                     </thead>
                     <tbody id="tableBody">
-                        <!-- Data will be loaded dynamically -->
+                        <!-- Data loaded dynamically -->
                     </tbody>
                 </table>
             </div>
@@ -367,7 +418,7 @@
         const API_URL = 'https://car-lease-manager.onrender.com/api/entries';
         let globalEntriesData = [];
 
-        // Simple Multi-Account Login Handling via LocalStorage
+        // Login Handling
         document.getElementById('loginForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const user = document.getElementById('loginUser').value.trim();
@@ -375,24 +426,29 @@
 
             if(user && pass) {
                 localStorage.setItem('carLeaseUser', user);
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('appContent').style.display = 'block';
-                fetchEntries();
+                initSession(user);
             }
         });
 
         window.addEventListener('DOMContentLoaded', () => {
             const savedUser = localStorage.getItem('carLeaseUser');
             if(savedUser) {
-                document.getElementById('loginOverlay').style.display = 'none';
-                document.getElementById('appContent').style.display = 'block';
-                fetchEntries();
+                initSession(savedUser);
             }
         });
 
+        function initSession(username) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('appContent').style.display = 'block';
+            document.getElementById('displayUsername').innerText = username;
+            fetchEntries();
+        }
+
         function handleLogout() {
-            localStorage.removeItem('carLeaseUser');
-            location.reload();
+            if(confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('carLeaseUser');
+                location.reload();
+            }
         }
 
         // Auto-calculate Bakaya
@@ -409,7 +465,7 @@
         costInput.addEventListener('input', calculateBakaya);
         paidInput.addEventListener('input', calculateBakaya);
 
-        // Fetch and display entries
+        // Fetch entries
         async function fetchEntries() {
             try {
                 const response = await fetch(API_URL);
@@ -451,7 +507,7 @@
 
             const formData = {
                 date: document.getElementById('date').value,
-                carBrand: document.getElementById('carBrand').value,
+                carBrand: document.getElementById('carBrand.value') || document.getElementById('carBrand').value,
                 carNumber: document.getElementById('carNumber').value,
                 ownerName: document.getElementById('ownerName').value,
                 ownerMobile: document.getElementById('ownerMobile').value,
@@ -480,7 +536,7 @@
                     document.getElementById('leaseForm').reset();
                     fetchEntries();
                 } else {
-                    alert('Failed to save entry. Render server might be waking up, please try again.');
+                    alert('Failed to save entry. Please check backend connection.');
                 }
             } catch (err) {
                 console.error('Error saving data:', err);
@@ -488,7 +544,7 @@
             }
         });
 
-        // Export to Excel Function
+        // Excel Export
         function exportToExcel() {
             if(globalEntriesData.length === 0) {
                 alert('No data available to export!');
@@ -500,7 +556,7 @@
             XLSX.writeFile(workbook, "CarLease_Records.xlsx");
         }
 
-        // Export to PDF Function
+        // PDF Export
         function exportToPDF() {
             if(globalEntriesData.length === 0) {
                 alert('No data available to export!');
