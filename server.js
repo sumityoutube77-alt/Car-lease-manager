@@ -58,7 +58,7 @@ mongoose.connection.on('disconnected', () => {
 // SCHEMAS
 // ============================================================
 
-// User Schema
+// 1. User Schema
 const userSchema = new mongoose.Schema({
     fullName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-// Lease Entry Schema
+// 2. Lease Entry Schema
 const leaseSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     serialNo: { type: Number, default: 0 },
@@ -94,8 +94,28 @@ const leaseSchema = new mongoose.Schema({
     strict: true
 });
 
+// 3. Delhi Entry Schema
+const delhiSchema = new mongoose.Schema({
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    date: { type: String, required: true },
+    carName: { type: String, required: true },
+    carNumber: { type: String, required: true },
+    income: { type: Number, default: 0, min: 0 },
+    driverName: { type: String, required: true },
+    expenditure: { type: Number, default: 0, min: 0 },
+    documentTick: { type: Boolean, default: false },
+    trcTick: { type: Boolean, default: false },
+    rcTick: { type: Boolean, default: false },
+    insuranceTick: { type: Boolean, default: false },
+    numberPlateTick: { type: Boolean, default: false }
+}, { 
+    timestamps: true,
+    strict: true
+});
+
 const User = mongoose.model('User', userSchema);
 const LeaseEntry = mongoose.model('LeaseEntry', leaseSchema);
+const DelhiEntry = mongoose.model('DelhiEntry', delhiSchema);
 
 // ============================================================
 // JWT HELPER
@@ -286,7 +306,6 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
         console.log(`🔑 OTP for ${username}: ${otp}`);
 
-        // OTP response mein bhejo - Dashboard par show hoga
         res.json({
             success: true,
             message: 'OTP generated successfully',
@@ -351,18 +370,18 @@ app.post('/api/auth/reset-password', async (req, res) => {
 // LEASE ENTRY ROUTES (Protected)
 // ============================================================
 
-// GET All Entries (User-specific)
+// GET All Lease Entries (User-specific)
 app.get('/api/entries', verifyToken, async (req, res) => {
     try {
         const entries = await LeaseEntry.find({ userId: req.user.userId }).sort({ _id: -1 });
         res.json(entries);
     } catch (err) {
-        console.error('Error fetching entries:', err);
+        console.error('Error fetching lease entries:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// GET Single Entry
+// GET Single Lease Entry
 app.get('/api/entries/:id', verifyToken, async (req, res) => {
     try {
         const entry = await LeaseEntry.findOne({ 
@@ -374,15 +393,15 @@ app.get('/api/entries/:id', verifyToken, async (req, res) => {
         }
         res.json(entry);
     } catch (err) {
-        console.error('Error fetching entry:', err);
+        console.error('Error fetching lease entry:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// CREATE Entry
+// CREATE Lease Entry
 app.post('/api/entries', verifyToken, async (req, res) => {
     try {
-        console.log('📝 Creating entry for user:', req.user.username);
+        console.log('📝 Creating lease entry for user:', req.user.username);
 
         const requiredFields = ['date', 'carBrand', 'carNumber', 'ownerName', 'ownerMobile', 'cost', 'paidCost'];
         const missingFields = requiredFields.filter(field => !req.body[field]);
@@ -403,23 +422,23 @@ app.post('/api/entries', verifyToken, async (req, res) => {
         });
 
         await newEntry.save();
-        console.log('✅ Entry created:', newEntry._id);
+        console.log('✅ Lease entry created:', newEntry._id);
 
         res.status(201).json({
             success: true,
-            message: 'Entry created successfully',
+            message: 'Lease entry created successfully',
             data: newEntry
         });
     } catch (err) {
-        console.error('Error creating entry:', err);
+        console.error('Error creating lease entry:', err);
         res.status(400).json({ error: err.message });
     }
 });
 
-// UPDATE Entry
+// UPDATE Lease Entry
 app.put('/api/entries/:id', verifyToken, async (req, res) => {
     try {
-        console.log('✏️ Updating entry for user:', req.user.username);
+        console.log('✏️ Updating lease entry for user:', req.user.username);
 
         const entry = await LeaseEntry.findOne({ 
             _id: req.params.id, 
@@ -441,23 +460,23 @@ app.put('/api/entries/:id', verifyToken, async (req, res) => {
             { new: true, runValidators: true }
         );
 
-        console.log('✅ Entry updated:', updatedEntry._id);
+        console.log('✅ Lease entry updated:', updatedEntry._id);
 
         res.json({
             success: true,
-            message: 'Entry updated successfully',
+            message: 'Lease entry updated successfully',
             data: updatedEntry
         });
     } catch (err) {
-        console.error('Error updating entry:', err);
+        console.error('Error updating lease entry:', err);
         res.status(400).json({ error: err.message });
     }
 });
 
-// DELETE Entry
+// DELETE Lease Entry
 app.delete('/api/entries/:id', verifyToken, async (req, res) => {
     try {
-        console.log('🗑️ Deleting entry for user:', req.user.username);
+        console.log('🗑️ Deleting lease entry for user:', req.user.username);
 
         const entry = await LeaseEntry.findOneAndDelete({ 
             _id: req.params.id, 
@@ -468,14 +487,146 @@ app.delete('/api/entries/:id', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Entry not found' });
         }
 
-        console.log('✅ Entry deleted:', req.params.id);
+        console.log('✅ Lease entry deleted:', req.params.id);
 
         res.json({
             success: true,
-            message: 'Entry deleted successfully'
+            message: 'Lease entry deleted successfully'
         });
     } catch (err) {
-        console.error('Error deleting entry:', err);
+        console.error('Error deleting lease entry:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// ============================================================
+// DELHI ENTRY ROUTES (Protected)
+// ============================================================
+
+// GET All Delhi Entries (User-specific)
+app.get('/api/delhi', verifyToken, async (req, res) => {
+    try {
+        const entries = await DelhiEntry.find({ userId: req.user.userId }).sort({ _id: -1 });
+        res.json(entries);
+    } catch (err) {
+        console.error('Error fetching Delhi entries:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// GET Single Delhi Entry
+app.get('/api/delhi/:id', verifyToken, async (req, res) => {
+    try {
+        const entry = await DelhiEntry.findOne({ 
+            _id: req.params.id, 
+            userId: req.user.userId 
+        });
+        if (!entry) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+        res.json(entry);
+    } catch (err) {
+        console.error('Error fetching Delhi entry:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// CREATE Delhi Entry
+app.post('/api/delhi', verifyToken, async (req, res) => {
+    try {
+        console.log('🏙️ Creating Delhi entry for user:', req.user.username);
+
+        const requiredFields = ['date', 'carName', 'carNumber', 'driverName'];
+        const missingFields = requiredFields.filter(field => !req.body[field]);
+        
+        if (missingFields.length > 0) {
+            return res.status(400).json({ 
+                error: `Missing required fields: ${missingFields.join(', ')}` 
+            });
+        }
+
+        const newEntry = new DelhiEntry({
+            userId: req.user.userId,
+            ...req.body,
+            income: parseFloat(req.body.income) || 0,
+            expenditure: parseFloat(req.body.expenditure) || 0
+        });
+
+        await newEntry.save();
+        console.log('✅ Delhi entry created:', newEntry._id);
+
+        res.status(201).json({
+            success: true,
+            message: 'Delhi entry created successfully',
+            data: newEntry
+        });
+    } catch (err) {
+        console.error('Error creating Delhi entry:', err);
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// UPDATE Delhi Entry
+app.put('/api/delhi/:id', verifyToken, async (req, res) => {
+    try {
+        console.log('✏️ Updating Delhi entry for user:', req.user.username);
+
+        const entry = await DelhiEntry.findOne({ 
+            _id: req.params.id, 
+            userId: req.user.userId 
+        });
+
+        if (!entry) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+
+        const updatedData = {
+            ...req.body,
+            income: parseFloat(req.body.income) || 0,
+            expenditure: parseFloat(req.body.expenditure) || 0
+        };
+
+        const updatedEntry = await DelhiEntry.findByIdAndUpdate(
+            req.params.id,
+            updatedData,
+            { new: true, runValidators: true }
+        );
+
+        console.log('✅ Delhi entry updated:', updatedEntry._id);
+
+        res.json({
+            success: true,
+            message: 'Delhi entry updated successfully',
+            data: updatedEntry
+        });
+    } catch (err) {
+        console.error('Error updating Delhi entry:', err);
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// DELETE Delhi Entry
+app.delete('/api/delhi/:id', verifyToken, async (req, res) => {
+    try {
+        console.log('🗑️ Deleting Delhi entry for user:', req.user.username);
+
+        const entry = await DelhiEntry.findOneAndDelete({ 
+            _id: req.params.id, 
+            userId: req.user.userId 
+        });
+
+        if (!entry) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+
+        console.log('✅ Delhi entry deleted:', req.params.id);
+
+        res.json({
+            success: true,
+            message: 'Delhi entry deleted successfully'
+        });
+    } catch (err) {
+        console.error('Error deleting Delhi entry:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -499,11 +650,15 @@ app.get('/health', (req, res) => {
     });
 });
 
+// ============================================================
+// ROOT ROUTE
+// ============================================================
 app.get('/', (req, res) => {
     res.json({
-        message: 'Haryana Car Lease Backend',
+        message: '🚗 Haryana Car Lease Backend',
         status: 'running',
-        endpoints: {
+        version: '2.0.0',
+        modules: {
             auth: {
                 register: 'POST /api/auth/register',
                 login: 'POST /api/auth/login',
@@ -511,12 +666,19 @@ app.get('/', (req, res) => {
                 forgot: 'POST /api/auth/forgot-password',
                 reset: 'POST /api/auth/reset-password'
             },
-            entries: {
+            lease: {
                 getAll: 'GET /api/entries',
                 getOne: 'GET /api/entries/:id',
                 create: 'POST /api/entries',
                 update: 'PUT /api/entries/:id',
                 delete: 'DELETE /api/entries/:id'
+            },
+            delhi: {
+                getAll: 'GET /api/delhi',
+                getOne: 'GET /api/delhi/:id',
+                create: 'POST /api/delhi',
+                update: 'PUT /api/delhi/:id',
+                delete: 'DELETE /api/delhi/:id'
             },
             health: 'GET /health'
         }
@@ -540,8 +702,32 @@ app.use((err, req, res, next) => {
 // ============================================================
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`📋 API Base: https://car-lease-manager.onrender.com`);
-    console.log(`🔐 Auth: /api/auth/register, /api/auth/login`);
-    console.log(`📊 Entries: /api/entries`);
+    console.log('═══════════════════════════════════════════════');
+    console.log('🚀 Server running on port', PORT);
+    console.log('📋 API Base:', `https://car-lease-manager.onrender.com`);
+    console.log('───────────────────────────────────────────────');
+    console.log('🔐 AUTH ENDPOINTS:');
+    console.log('   POST   /api/auth/register');
+    console.log('   POST   /api/auth/login');
+    console.log('   GET    /api/auth/verify');
+    console.log('   POST   /api/auth/forgot-password');
+    console.log('   POST   /api/auth/reset-password');
+    console.log('───────────────────────────────────────────────');
+    console.log('📝 LEASE ENDPOINTS:');
+    console.log('   GET    /api/entries');
+    console.log('   GET    /api/entries/:id');
+    console.log('   POST   /api/entries');
+    console.log('   PUT    /api/entries/:id');
+    console.log('   DELETE /api/entries/:id');
+    console.log('───────────────────────────────────────────────');
+    console.log('🏙️ DELHI ENDPOINTS:');
+    console.log('   GET    /api/delhi');
+    console.log('   GET    /api/delhi/:id');
+    console.log('   POST   /api/delhi');
+    console.log('   PUT    /api/delhi/:id');
+    console.log('   DELETE /api/delhi/:id');
+    console.log('───────────────────────────────────────────────');
+    console.log('❤️  HEALTH: GET /health');
+    console.log('═══════════════════════════════════════════════');
+    console.log('⏳ Waiting for MongoDB connection...');
 });
