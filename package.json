@@ -1,7 +1,7 @@
 {
   "name": "car-lease-backend",
   "version": "1.0.0",
-  "description": "Car Lease Management with Authentication",
+  "description": "Car Lease Management with Authentication & Delhi Module",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
