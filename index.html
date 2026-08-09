@@ -279,25 +279,73 @@
             text-decoration: underline;
         }
 
-        .password-strength {
-            height: 4px;
-            margin-top: 6px;
-            border-radius: 4px;
-            background: #e2e8f0;
-            overflow: hidden;
+        /* ========== OTP DISPLAY BOX ========== */
+        .otp-display-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #ede9fe 100%);
+            padding: 24px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+            border: 2px solid rgba(37, 99, 235, 0.15);
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(37, 99, 235, 0.1); }
+            50% { box-shadow: 0 0 40px rgba(37, 99, 235, 0.2); }
+        }
+
+        .otp-display-box .label {
+            color: #475569;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .otp-display-box .otp-code {
+            font-size: 48px;
+            font-weight: 800;
+            color: #2563eb;
+            letter-spacing: 12px;
+            background: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            display: inline-block;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, 0.15);
+            font-family: 'Courier New', monospace;
             transition: var(--transition);
         }
 
-        .password-strength .bar {
-            height: 100%;
-            transition: var(--transition);
-            border-radius: 4px;
+        .otp-display-box .otp-code.loading {
+            animation: shimmer 1.2s infinite;
+            background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+            background-size: 200% 100%;
+            color: transparent;
         }
 
-        .password-strength .bar.weak { width: 33%; background: #ef4444; }
-        .password-strength .bar.medium { width: 66%; background: #f59e0b; }
-        .password-strength .bar.strong { width: 100%; background: #10b981; }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
 
+        .otp-display-box .user-info {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .otp-display-box .user-info strong {
+            color: #1e293b;
+        }
+
+        .otp-display-box .expiry {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        /* ========== OTP INPUT ========== */
         .otp-input-group {
             display: flex;
             gap: 8px;
@@ -305,10 +353,10 @@
         }
 
         .otp-input-group input {
-            width: 50px;
-            height: 56px;
+            width: 48px;
+            height: 54px;
             text-align: center;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 700;
             border: 2px solid rgba(37, 99, 235, 0.15);
             border-radius: 10px;
@@ -321,6 +369,12 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
             outline: none;
+            transform: scale(1.05);
+        }
+
+        .otp-input-group input.filled {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.08);
         }
 
         /* ========== MAIN APP ========== */
@@ -835,7 +889,8 @@
             .user-name { font-size: 0.7rem; }
             th, td { padding: 5px 6px; font-size: 0.65rem; }
             .toast-container { bottom: 10px; right: 10px; left: 10px; max-width: 100%; }
-            .otp-input-group input { width: 40px; height: 48px; font-size: 1.2rem; }
+            .otp-input-group input { width: 40px; height: 44px; font-size: 1.1rem; }
+            .otp-display-box .otp-code { font-size: 32px; letter-spacing: 8px; padding: 8px 16px; }
         }
 
         @media (max-width: 480px) {
@@ -843,6 +898,8 @@
             .user-badge { padding: 3px 6px 3px 3px; }
             .user-avatar { width: 24px; height: 24px; font-size: 10px; }
             .logout-btn { padding: 5px 10px; font-size: 0.65rem; }
+            .otp-input-group input { width: 36px; height: 40px; font-size: 1rem; }
+            .otp-display-box .otp-code { font-size: 26px; letter-spacing: 6px; padding: 6px 12px; }
         }
 
         @media (min-width: 769px) {
@@ -865,6 +922,24 @@
         @keyframes shimmer {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
+        }
+
+        /* Copy OTP button */
+        .copy-otp-btn {
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            color: var(--primary);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 8px;
+        }
+
+        .copy-otp-btn:hover {
+            background: var(--primary);
+            color: white;
         }
     </style>
 </head>
@@ -925,8 +1000,7 @@
                 </div>
                 <div class="input-group">
                     <label>🔒 Password</label>
-                    <input type="password" id="regPassword" placeholder="Min 6 characters" required oninput="checkPasswordStrength(this.value)">
-                    <div class="password-strength"><div class="bar" id="strengthBar"></div></div>
+                    <input type="password" id="regPassword" placeholder="Min 6 characters" required>
                 </div>
                 <div class="input-group">
                     <label>🔒 Confirm Password</label>
@@ -945,13 +1019,13 @@
         <div class="auth-card">
             <div class="logo">🔑</div>
             <h2>Reset Password</h2>
-            <p class="subtitle">Enter your username to reset password</p>
+            <p class="subtitle">Enter your username to get OTP</p>
             <form id="forgotForm">
                 <div class="input-group">
                     <label>👤 Username</label>
                     <input type="text" id="forgotUsername" placeholder="Enter your username" required>
                 </div>
-                <button type="submit" class="auth-btn" id="forgotBtn">📧 Send OTP</button>
+                <button type="submit" class="auth-btn" id="forgotBtn">📱 Get OTP</button>
                 <div class="auth-links">
                     <a onclick="showLogin()">← Back to Login</a>
                 </div>
@@ -959,15 +1033,27 @@
         </div>
     </div>
 
-    <!-- ==================== OTP VERIFICATION ==================== -->
+    <!-- ==================== OTP VERIFICATION (Dashboard Style) ==================== -->
     <div class="auth-overlay hidden" id="otpOverlay">
         <div class="auth-card">
-            <div class="logo">📱</div>
-            <h2>Verify OTP</h2>
-            <p class="subtitle">Enter the 6-digit code sent to your email</p>
+            <div class="logo">🔐</div>
+            <h2>OTP Verification</h2>
+            <p class="subtitle" id="otpUserInfo">Enter OTP to reset password</p>
+
+            <!-- ✅ OTP DISPLAY - Dashboard Par Dikhega -->
+            <div class="otp-display-box" id="otpDisplayBox">
+                <div class="label">📱 Your OTP Code</div>
+                <div class="otp-code" id="otpCodeDisplay">------</div>
+                <div class="user-info">
+                    👤 <strong id="otpUserName">---</strong>
+                </div>
+                <div class="expiry">⏱️ Valid for 10 minutes</div>
+                <button class="copy-otp-btn" onclick="copyOTP()">📋 Copy OTP</button>
+            </div>
+
             <form id="otpForm">
                 <div class="input-group">
-                    <label>🔢 OTP Code</label>
+                    <label>🔢 Enter OTP</label>
                     <div class="otp-input-group">
                         <input type="text" maxlength="1" class="otp-input" required>
                         <input type="text" maxlength="1" class="otp-input" required>
@@ -977,6 +1063,7 @@
                         <input type="text" maxlength="1" class="otp-input" required>
                     </div>
                     <input type="hidden" id="otpResetUsername">
+                    <input type="hidden" id="otpStoredCode">
                 </div>
                 <div class="input-group">
                     <label>🔒 New Password</label>
@@ -1150,6 +1237,7 @@
         let isDarkMode = false;
         let currentUser = null;
         let sessionTimer = null;
+        let currentOTP = '';
 
         // ============================================================
         // TOAST NOTIFICATIONS
@@ -1209,14 +1297,43 @@
             document.getElementById('otpOverlay').classList.add('hidden');
         }
 
-        function showOTP(username) {
+        function showOTP(data) {
             document.getElementById('loginOverlay').classList.add('hidden');
             document.getElementById('registerOverlay').classList.add('hidden');
             document.getElementById('forgotOverlay').classList.add('hidden');
             document.getElementById('otpOverlay').classList.remove('hidden');
-            document.getElementById('otpResetUsername').value = username;
+            
+            // Show OTP on dashboard
+            document.getElementById('otpCodeDisplay').textContent = data.otp;
+            document.getElementById('otpUserName').textContent = data.fullName || data.username;
+            document.getElementById('otpUserInfo').innerHTML = `🔐 OTP for <strong>${data.fullName || data.username}</strong>`;
+            document.getElementById('otpResetUsername').value = data.username;
+            document.getElementById('otpStoredCode').value = data.otp;
+            currentOTP = data.otp;
+            
             // Focus first OTP input
             document.querySelector('.otp-input').focus();
+            
+            showToast('📱 OTP generated successfully! Check the box above.', 'info');
+        }
+
+        // Copy OTP
+        function copyOTP() {
+            const otp = document.getElementById('otpCodeDisplay').textContent;
+            if (otp && otp !== '------') {
+                navigator.clipboard.writeText(otp).then(() => {
+                    showToast('📋 OTP copied to clipboard!', 'success');
+                }).catch(() => {
+                    // Fallback
+                    const textArea = document.createElement('textarea');
+                    textArea.value = otp;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    textArea.remove();
+                    showToast('📋 OTP copied to clipboard!', 'success');
+                });
+            }
         }
 
         // OTP Input Auto-focus
@@ -1225,6 +1342,17 @@
                 if (this.value.length === 1 && index < arr.length - 1) {
                     arr[index + 1].focus();
                 }
+                // Auto-fill OTP from display
+                const otpCode = document.getElementById('otpCodeDisplay').textContent;
+                if (otpCode && otpCode !== '------') {
+                    const digits = otpCode.split('');
+                    arr.forEach((inp, i) => {
+                        if (digits[i]) {
+                            inp.value = digits[i];
+                            inp.classList.add('filled');
+                        }
+                    });
+                }
             });
             input.addEventListener('keydown', function(e) {
                 if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
@@ -1232,14 +1360,6 @@
                 }
             });
         });
-
-        // Password Strength
-        function checkPasswordStrength(password) {
-            const bar = document.getElementById('strengthBar');
-            if (password.length === 0) { bar.className = 'bar'; return; }
-            const strength = password.length >= 8 ? 'strong' : password.length >= 5 ? 'medium' : 'weak';
-            bar.className = `bar ${strength}`;
-        }
 
         // ============================================================
         // REGISTER
@@ -1334,13 +1454,13 @@
         });
 
         // ============================================================
-        // FORGOT PASSWORD
+        // FORGOT PASSWORD - OTP Dashboard Par Show
         // ============================================================
         document.getElementById('forgotForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('forgotBtn');
             btn.disabled = true;
-            btn.textContent = '⏳ Sending...';
+            btn.textContent = '⏳ Generating...';
 
             const username = document.getElementById('forgotUsername').value.trim();
 
@@ -1354,8 +1474,9 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    showToast('✅ OTP sent to your email!', 'success');
-                    showOTP(username);
+                    // OTP result mein aayega
+                    showOTP(result);
+                    showToast('✅ OTP generated! Check the box above.', 'success');
                 } else {
                     showToast(result.error || 'User not found', 'error');
                 }
@@ -1364,7 +1485,7 @@
             }
 
             btn.disabled = false;
-            btn.textContent = '📧 Send OTP';
+            btn.textContent = '📱 Get OTP';
         });
 
         // ============================================================
@@ -1377,12 +1498,16 @@
             btn.textContent = '⏳ Resetting...';
 
             const otpInputs = document.querySelectorAll('.otp-input');
-            const otp = Array.from(otpInputs).map(inp => inp.value).join('');
+            const enteredOTP = Array.from(otpInputs).map(inp => inp.value).join('');
             const username = document.getElementById('otpResetUsername').value;
+            const storedOTP = document.getElementById('otpStoredCode').value;
             const newPassword = document.getElementById('otpNewPassword').value;
             const confirmPass = document.getElementById('otpConfirmPass').value;
 
-            if (otp.length !== 6) {
+            // Auto-fill OTP check
+            const finalOTP = enteredOTP || storedOTP;
+
+            if (finalOTP.length !== 6) {
                 showToast('Please enter complete 6-digit OTP', 'error');
                 btn.disabled = false;
                 btn.textContent = '✅ Reset Password';
@@ -1407,7 +1532,11 @@
                 const response = await fetch(`${AUTH_URL}/reset-password`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, otp, newPassword })
+                    body: JSON.stringify({ 
+                        username, 
+                        otp: finalOTP, 
+                        newPassword 
+                    })
                 });
 
                 const result = await response.json();
@@ -1430,7 +1559,9 @@
         function resendOTP() {
             const username = document.getElementById('otpResetUsername').value;
             if (username) {
-                showToast('📧 New OTP sent to your email!', 'info');
+                // Trigger forgot password again
+                document.getElementById('forgotUsername').value = username;
+                document.getElementById('forgotForm').dispatchEvent(new Event('submit'));
             }
         }
 
@@ -1442,10 +1573,9 @@
             sessionTimer = setTimeout(() => {
                 showToast('⏰ Session expired. Please login again.', 'warning');
                 handleLogout();
-            }, 30 * 60 * 1000); // 30 minutes
+            }, 30 * 60 * 1000);
         }
 
-        // Reset timer on user activity
         document.addEventListener('click', () => {
             if (currentUser) {
                 clearTimeout(sessionTimer);
@@ -1479,7 +1609,6 @@
             const savedUser = localStorage.getItem('carLeaseUser');
             const savedToken = localStorage.getItem('carLeaseToken');
             if (savedUser && savedToken) {
-                // Verify token with backend
                 fetch(`${AUTH_URL}/verify`, {
                     headers: { 'Authorization': `Bearer ${savedToken}` }
                 })
@@ -1518,7 +1647,7 @@
         paidInput.addEventListener('input', calculateBakaya);
 
         // ============================================================
-        // FETCH ENTRIES (User-specific)
+        // FETCH ENTRIES
         // ============================================================
         async function fetchEntries() {
             try {
@@ -1801,7 +1930,7 @@
         }
 
         // ============================================================
-        // PROFILE (Bonus Feature)
+        // PROFILE
         // ============================================================
         function showProfile() {
             if (currentUser) {
