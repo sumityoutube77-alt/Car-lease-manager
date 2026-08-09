@@ -296,8 +296,8 @@
     </div>
 
     <script>
-        // BACKEND API URL (Render URL yaha daalein, jab aap backend deploy karlein)
-        const API_URL = 'https://YOUR-RENDER-BACKEND-URL.onrender.com/api/entries';
+        // Render Backend URL is already configured here
+        const API_URL = 'https://car-lease-manager.onrender.com/api/entries';
 
         // Auto-calculate Bakaya (Cost - Paid Cost)
         const costInput = document.getElementById('cost');
@@ -376,7 +376,7 @@
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+                    body: JSON.stringify(formData)
                 });
 
                 if (response.ok) {
