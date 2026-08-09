@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Haryana Car Lease - Secure Dashboard</title>
+    <title>Haryana Car Lease - Professional Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -583,6 +583,48 @@
             background: var(--delhi-color);
         }
 
+        /* ========== SEARCH & FILTER ========== */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+
+        .search-bar input, .search-bar select {
+            padding: 8px 14px;
+            border: 2px solid rgba(37, 99, 235, 0.1);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            font-size: 0.85rem;
+            transition: var(--transition);
+            color: var(--text-primary);
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .search-bar input:focus, .search-bar select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.06);
+            outline: none;
+        }
+
+        .search-bar .search-btn {
+            padding: 8px 16px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .search-bar .search-btn:hover {
+            transform: scale(1.05);
+        }
+
         /* ========== FORM ========== */
         .form-grid {
             display: grid;
@@ -765,6 +807,17 @@
             box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
         }
 
+        .btn-export.print {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-export.print:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+        }
+
         /* ========== TABLE ========== */
         .table-wrapper {
             overflow-x: auto;
@@ -797,6 +850,17 @@
             border-bottom: 2px solid rgba(37, 99, 235, 0.1);
             background: rgba(37, 99, 235, 0.04);
             white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        th:hover {
+            background: rgba(37, 99, 235, 0.08);
+        }
+
+        th .sort-icon {
+            margin-left: 4px;
+            font-size: 0.6rem;
         }
 
         td {
@@ -929,6 +993,8 @@
             .otp-input-group input { width: 40px; height: 44px; font-size: 1.1rem; }
             .module-selector { flex-direction: column; }
             .module-btn { min-width: unset; }
+            .search-bar { flex-direction: column; }
+            .search-bar input, .search-bar select { min-width: unset; width: 100%; }
         }
 
         @media (max-width: 480px) {
@@ -948,6 +1014,20 @@
         ::-webkit-scrollbar-track { background: rgba(37, 99, 235, 0.05); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: var(--primary-light); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+
+        /* Print Styles */
+        @media print {
+            .module-selector, .btn-edit, .btn-delete, .btn-submit, .export-group, .search-bar {
+                display: none !important;
+            }
+            .glass-card {
+                break-inside: avoid;
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+            }
+            body { background: white !important; }
+            .bg-animation { display: none !important; }
+        }
     </style>
 </head>
 <body>
@@ -1194,7 +1274,7 @@
                 </form>
             </div>
 
-            <!-- Lease Table -->
+            <!-- Lease Table with Search -->
             <div class="glass-card">
                 <div class="card-header">
                     <div class="card-title">
@@ -1204,24 +1284,38 @@
                     <div class="export-group">
                         <button class="btn-export excel" onclick="exportLeaseToExcel()">📊 Excel</button>
                         <button class="btn-export pdf" onclick="exportLeaseToPDF()">📄 PDF</button>
+                        <button class="btn-export print" onclick="window.print()">🖨️ Print</button>
                     </div>
                 </div>
+                
+                <!-- Search Bar -->
+                <div class="search-bar">
+                    <input type="text" id="leaseSearchInput" placeholder="🔍 Search by brand, number, owner..." oninput="filterLeaseTable()">
+                    <select id="leaseStatusFilter" onchange="filterLeaseTable()">
+                        <option value="all">All Status</option>
+                        <option value="paid">Paid (Bakaya = 0)</option>
+                        <option value="pending">Pending (Bakaya > 0)</option>
+                    </select>
+                    <button class="search-btn" onclick="filterLeaseTable()">🔍 Filter</button>
+                    <button class="search-btn" onclick="resetLeaseFilter()" style="background: var(--text-secondary);">↺ Reset</button>
+                </div>
+
                 <div class="table-wrapper">
                     <table>
                         <thead>
                             <tr>
-                                <th>Action</th>
-                                <th>#</th>
-                                <th>Date</th>
-                                <th>Brand</th>
-                                <th>Car No</th>
-                                <th>Owner</th>
-                                <th>Mobile</th>
-                                <th>Guarantor</th>
-                                <th>G. Mobile</th>
-                                <th>Cost</th>
-                                <th>Paid</th>
-                                <th>Bakaya</th>
+                                <th onclick="sortLeaseTable('action')">Action</th>
+                                <th onclick="sortLeaseTable('serialNo')"># <span class="sort-icon">↕</span></th>
+                                <th onclick="sortLeaseTable('date')">Date <span class="sort-icon">↕</span></th>
+                                <th onclick="sortLeaseTable('carBrand')">Brand <span class="sort-icon">↕</span></th>
+                                <th onclick="sortLeaseTable('carNumber')">Car No <span class="sort-icon">↕</span></th>
+                                <th onclick="sortLeaseTable('ownerName')">Owner <span class="sort-icon">↕</span></th>
+                                <th onclick="sortLeaseTable('ownerMobile')">Mobile</th>
+                                <th onclick="sortLeaseTable('guarantor')">Guarantor</th>
+                                <th onclick="sortLeaseTable('guarantorMobile')">G. Mobile</th>
+                                <th onclick="sortLeaseTable('cost')">Cost <span class="sort-icon">↕</span></th>
+                                <th onclick="sortLeaseTable('paidCost')">Paid <span class="sort-icon">↕</span></th>
+                                <th onclick="sortLeaseTable('bakaya')">Bakaya <span class="sort-icon">↕</span></th>
                                 <th>Doc</th>
                                 <th>TRC</th>
                                 <th>RC</th>
@@ -1257,13 +1351,13 @@
                         📅 <span id="delhiMonthDisplay">August 2026</span>
                     </span>
                 </div>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 12px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 12px;">
                     <div style="background: rgba(220,38,38,0.06); padding: 12px; border-radius: 10px; text-align: center;">
                         <div style="font-size: 0.7rem; color: var(--text-secondary);">Total Cars</div>
                         <div style="font-size: 24px; font-weight: 700; color: var(--delhi-color);" id="delhiTotalCars">0</div>
                     </div>
                     <div style="background: rgba(16,185,129,0.06); padding: 12px; border-radius: 10px; text-align: center;">
-                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Total Income</div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">Total Incost</div>
                         <div style="font-size: 24px; font-weight: 700; color: var(--success);" id="delhiTotalIncome">₹0</div>
                     </div>
                     <div style="background: rgba(239,68,68,0.06); padding: 12px; border-radius: 10px; text-align: center;">
@@ -1306,7 +1400,7 @@
                         <input type="text" id="delhiCarNumber" placeholder="DL01ABCD" required>
                     </div>
                     <div class="form-group">
-                        <label>💰 Income (₹)</label>
+                        <label>💰 Incost (₹)</label>
                         <input type="number" id="delhiIncome" placeholder="50000" required>
                     </div>
                     <div class="form-group">
@@ -1333,7 +1427,7 @@
                 </form>
             </div>
 
-            <!-- Delhi Table -->
+            <!-- Delhi Table with Search -->
             <div class="glass-card" style="border-color: rgba(220,38,38,0.2);">
                 <div class="card-header">
                     <div class="card-title" style="color: var(--delhi-color);">
@@ -1343,8 +1437,22 @@
                     <div class="export-group">
                         <button class="btn-export excel" onclick="exportDelhiToExcel()">📊 Excel</button>
                         <button class="btn-export pdf" onclick="exportDelhiToPDF()">📄 PDF</button>
+                        <button class="btn-export print" onclick="window.print()">🖨️ Print</button>
                     </div>
                 </div>
+                
+                <!-- Search Bar -->
+                <div class="search-bar">
+                    <input type="text" id="delhiSearchInput" placeholder="🔍 Search by car name, number, driver..." oninput="filterDelhiTable()">
+                    <select id="delhiStatusFilter" onchange="filterDelhiTable()">
+                        <option value="all">All Records</option>
+                        <option value="profit">Profit (Net > 0)</option>
+                        <option value="loss">Loss (Net < 0)</option>
+                    </select>
+                    <button class="search-btn" onclick="filterDelhiTable()">🔍 Filter</button>
+                    <button class="search-btn" onclick="resetDelhiTableFilter()" style="background: var(--text-secondary);">↺ Reset</button>
+                </div>
+
                 <div class="table-wrapper">
                     <table>
                         <thead>
@@ -1355,7 +1463,7 @@
                                 <th>Car Name</th>
                                 <th>Car No</th>
                                 <th>Driver</th>
-                                <th>Income</th>
+                                <th>Incost</th>
                                 <th>Expenditure</th>
                                 <th>Net</th>
                                 <th>Doc</th>
@@ -1392,10 +1500,15 @@
         
         let leaseData = [];
         let delhiData = [];
+        let filteredLeaseData = [];
+        let filteredDelhiData = [];
         let currentUser = null;
         let sessionTimer = null;
         let currentModule = 'lease';
-        let delhiFilterMonth = '';
+        let leaseSortField = 'serialNo';
+        let leaseSortOrder = 'desc';
+        let delhiSortField = 'date';
+        let delhiSortOrder = 'desc';
 
         // ============================================================
         // TOAST NOTIFICATIONS
@@ -1470,7 +1583,6 @@
             showToast('📱 OTP generated! Check the box above.', 'info');
         }
 
-        // OTP Input Auto-focus
         document.querySelectorAll('.otp-input').forEach((input, index, arr) => {
             input.addEventListener('input', function() {
                 if (this.value.length === 1 && index < arr.length - 1) {
@@ -1708,7 +1820,6 @@
             document.getElementById('displayUsername').innerText = username;
             document.getElementById('userAvatar').innerText = username.charAt(0).toUpperCase();
             
-            // Set default month for Delhi
             const now = new Date();
             const month = String(now.getMonth() + 1).padStart(2, '0');
             const year = now.getFullYear();
@@ -1761,11 +1872,9 @@
         function switchModule(module) {
             currentModule = module;
             
-            // Update buttons
             document.getElementById('leaseModuleBtn').className = 'module-btn' + (module === 'lease' ? ' active-lease' : '');
             document.getElementById('delhiModuleBtn').className = 'module-btn' + (module === 'delhi' ? ' active-delhi' : '');
             
-            // Show/hide modules
             document.getElementById('leaseModule').className = 'module-content' + (module === 'lease' ? ' active' : '');
             document.getElementById('delhiModule').className = 'module-content' + (module === 'delhi' ? ' active' : '');
         }
@@ -1797,7 +1906,8 @@
                 });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 leaseData = await response.json();
-                renderLeaseTable(leaseData);
+                filteredLeaseData = [...leaseData];
+                renderLeaseTable(filteredLeaseData);
                 document.getElementById('leaseRecordCount').textContent = leaseData.length;
             } catch (err) {
                 console.error('Error fetching lease data:', err);
@@ -1965,6 +2075,71 @@
         });
 
         // ============================================================
+        // LEASE - Search & Filter
+        // ============================================================
+        function filterLeaseTable() {
+            const searchTerm = document.getElementById('leaseSearchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('leaseStatusFilter').value;
+
+            filteredLeaseData = leaseData.filter(entry => {
+                // Search
+                const matchesSearch = !searchTerm || 
+                    entry.carBrand?.toLowerCase().includes(searchTerm) ||
+                    entry.carNumber?.toLowerCase().includes(searchTerm) ||
+                    entry.ownerName?.toLowerCase().includes(searchTerm) ||
+                    entry.ownerMobile?.includes(searchTerm);
+
+                // Status filter
+                let matchesStatus = true;
+                if (statusFilter === 'paid') {
+                    matchesStatus = (entry.bakaya || 0) === 0;
+                } else if (statusFilter === 'pending') {
+                    matchesStatus = (entry.bakaya || 0) > 0;
+                }
+
+                return matchesSearch && matchesStatus;
+            });
+
+            renderLeaseTable(filteredLeaseData);
+            document.getElementById('leaseRecordCount').textContent = filteredLeaseData.length;
+        }
+
+        function resetLeaseFilter() {
+            document.getElementById('leaseSearchInput').value = '';
+            document.getElementById('leaseStatusFilter').value = 'all';
+            filteredLeaseData = [...leaseData];
+            renderLeaseTable(filteredLeaseData);
+            document.getElementById('leaseRecordCount').textContent = filteredLeaseData.length;
+            showToast('🔄 Filters reset', 'info');
+        }
+
+        // ============================================================
+        // LEASE - Sort
+        // ============================================================
+        function sortLeaseTable(field) {
+            if (leaseSortField === field) {
+                leaseSortOrder = leaseSortOrder === 'asc' ? 'desc' : 'asc';
+            } else {
+                leaseSortField = field;
+                leaseSortOrder = 'asc';
+            }
+
+            filteredLeaseData.sort((a, b) => {
+                let valA = a[field] || '';
+                let valB = b[field] || '';
+                
+                if (typeof valA === 'string') valA = valA.toLowerCase();
+                if (typeof valB === 'string') valB = valB.toLowerCase();
+                
+                if (valA < valB) return leaseSortOrder === 'asc' ? -1 : 1;
+                if (valA > valB) return leaseSortOrder === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            renderLeaseTable(filteredLeaseData);
+        }
+
+        // ============================================================
         // DELHI - CRUD Operations
         // ============================================================
         async function fetchDelhiData() {
@@ -1975,8 +2150,9 @@
                 });
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 delhiData = await response.json();
-                renderDelhiTable(delhiData);
-                updateDelhiSummary(delhiData);
+                filteredDelhiData = [...delhiData];
+                renderDelhiTable(filteredDelhiData);
+                updateDelhiSummary(filteredDelhiData);
                 document.getElementById('delhiRecordCount').textContent = delhiData.length;
             } catch (err) {
                 console.error('Error fetching Delhi data:', err);
@@ -2056,8 +2232,9 @@
                        (entryDate.getMonth() + 1) === parseInt(monthNum);
             });
             
-            renderDelhiTable(filtered);
-            updateDelhiSummary(filtered);
+            filteredDelhiData = filtered;
+            renderDelhiTable(filteredDelhiData);
+            updateDelhiSummary(filteredDelhiData);
             
             const monthName = new Date(parseInt(year), parseInt(monthNum) - 1).toLocaleString('default', { month: 'long' });
             document.getElementById('delhiMonthDisplay').textContent = `${monthName} ${year}`;
@@ -2070,8 +2247,9 @@
             const year = now.getFullYear();
             document.getElementById('delhiMonthPicker').value = `${year}-${month}`;
             document.getElementById('delhiMonthDisplay').textContent = `${now.toLocaleString('default', { month: 'long' })} ${year}`;
-            renderDelhiTable(delhiData);
-            updateDelhiSummary(delhiData);
+            filteredDelhiData = [...delhiData];
+            renderDelhiTable(filteredDelhiData);
+            updateDelhiSummary(filteredDelhiData);
             showToast('📋 Showing all records', 'info');
         }
 
@@ -2177,7 +2355,48 @@
         });
 
         // ============================================================
-        // EXPORT FUNCTIONS - LEASE
+        // DELHI - Search & Filter
+        // ============================================================
+        function filterDelhiTable() {
+            const searchTerm = document.getElementById('delhiSearchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('delhiStatusFilter').value;
+
+            filteredDelhiData = delhiData.filter(entry => {
+                // Search
+                const matchesSearch = !searchTerm || 
+                    entry.carName?.toLowerCase().includes(searchTerm) ||
+                    entry.carNumber?.toLowerCase().includes(searchTerm) ||
+                    entry.driverName?.toLowerCase().includes(searchTerm);
+
+                // Status filter
+                let matchesStatus = true;
+                const net = (entry.income || 0) - (entry.expenditure || 0);
+                if (statusFilter === 'profit') {
+                    matchesStatus = net > 0;
+                } else if (statusFilter === 'loss') {
+                    matchesStatus = net < 0;
+                }
+
+                return matchesSearch && matchesStatus;
+            });
+
+            renderDelhiTable(filteredDelhiData);
+            updateDelhiSummary(filteredDelhiData);
+            document.getElementById('delhiRecordCount').textContent = filteredDelhiData.length;
+        }
+
+        function resetDelhiTableFilter() {
+            document.getElementById('delhiSearchInput').value = '';
+            document.getElementById('delhiStatusFilter').value = 'all';
+            filteredDelhiData = [...delhiData];
+            renderDelhiTable(filteredDelhiData);
+            updateDelhiSummary(filteredDelhiData);
+            document.getElementById('delhiRecordCount').textContent = filteredDelhiData.length;
+            showToast('🔄 Filters reset', 'info');
+        }
+
+        // ============================================================
+        // EXPORT - LEASE (PDF with ALL Columns)
         // ============================================================
         function exportLeaseToExcel() {
             if (leaseData.length === 0) {
@@ -2218,35 +2437,63 @@
             }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l', 'mm', 'a4');
+            
+            // Header
             doc.setFontSize(16);
             doc.text('Haryana Car Lease - Lease Records', 14, 18);
             doc.setFontSize(9);
             doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
             doc.text(`Total: ${leaseData.length} records`, 14, 31);
+            doc.text(`User: ${currentUser?.fullName || 'N/A'}`, 14, 37);
 
+            // Table with ALL columns including Guarantor
             const tableData = leaseData.map((item, i) => [
-                i + 1, item.date || '', item.carBrand || '', item.carNumber || '',
-                item.ownerName || '', item.ownerMobile || '', item.cost || 0,
-                item.paidCost || 0, item.bakaya || 0,
-                item.documentTick ? 'Yes' : 'No', item.trcTick ? 'Yes' : 'No',
-                item.rcTick ? 'Yes' : 'No', item.insuranceTick ? 'Yes' : 'No',
-                item.numberPlateTick ? 'Yes' : 'No', item.agreementTick ? 'Yes' : 'No'
+                i + 1, 
+                item.date || '', 
+                item.carBrand || '', 
+                item.carNumber || '',
+                item.ownerName || '', 
+                item.ownerMobile || '',
+                item.guarantor || '-',  // ✅ Guarantor Added
+                item.guarantorMobile || '-',  // ✅ G. Mobile Added
+                item.cost || 0,
+                item.paidCost || 0, 
+                item.bakaya || 0,
+                item.documentTick ? 'Yes' : 'No', 
+                item.trcTick ? 'Yes' : 'No',
+                item.rcTick ? 'Yes' : 'No', 
+                item.insuranceTick ? 'Yes' : 'No',
+                item.numberPlateTick ? 'Yes' : 'No', 
+                item.agreementTick ? 'Yes' : 'No'
             ]);
 
             doc.autoTable({
-                head: [['#', 'Date', 'Brand', 'Car No', 'Owner', 'Mobile', 'Cost', 'Paid', 'Bakaya', 'Doc', 'TRC', 'RC', 'Ins', 'Plate', 'Agr']],
+                head: [['#', 'Date', 'Brand', 'Car No', 'Owner', 'Mobile', 'Guarantor', 'G. Mobile', 'Cost', 'Paid', 'Bakaya', 'Doc', 'TRC', 'RC', 'Ins', 'Plate', 'Agr']],
                 body: tableData,
-                startY: 35,
+                startY: 43,
                 theme: 'grid',
                 styles: { fontSize: 6 },
-                headStyles: { fillColor: [37, 99, 235] }
+                headStyles: { fillColor: [37, 99, 235] },
+                columnStyles: {
+                    0: { cellWidth: 10 },
+                    1: { cellWidth: 18 },
+                    2: { cellWidth: 18 },
+                    3: { cellWidth: 18 },
+                    4: { cellWidth: 20 },
+                    5: { cellWidth: 18 },
+                    6: { cellWidth: 18 },
+                    7: { cellWidth: 18 },
+                    8: { cellWidth: 15 },
+                    9: { cellWidth: 15 },
+                    10: { cellWidth: 15 }
+                }
             });
             doc.save(`Lease_Records_${new Date().toISOString().split('T')[0]}.pdf`);
             showToast(`📄 Exported ${leaseData.length} lease records!`, 'success');
         }
 
         // ============================================================
-        // EXPORT FUNCTIONS - DELHI
+        // EXPORT - DELHI (PDF with Incost)
         // ============================================================
         function exportDelhiToExcel() {
             if (delhiData.length === 0) {
@@ -2258,7 +2505,7 @@
                 'Car Name': item.carName || '',
                 'Car Number': item.carNumber || '',
                 'Driver Name': item.driverName || '',
-                'Income': item.income || 0,
+                'Incost': item.income || 0,  // ✅ Incost
                 'Expenditure': item.expenditure || 0,
                 'Net': (item.income || 0) - (item.expenditure || 0),
                 'Document': item.documentTick ? 'Yes' : 'No',
@@ -2282,25 +2529,34 @@
             }
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF('l', 'mm', 'a4');
+            
             doc.setFontSize(16);
             doc.text('Haryana Car Lease - Delhi Records', 14, 18);
             doc.setFontSize(9);
             doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 25);
             doc.text(`Total: ${delhiData.length} records`, 14, 31);
+            doc.text(`User: ${currentUser?.fullName || 'N/A'}`, 14, 37);
 
             const tableData = delhiData.map((item, i) => [
-                i + 1, item.date || '', item.carName || '', item.carNumber || '',
-                item.driverName || '', item.income || 0, item.expenditure || 0,
+                i + 1, 
+                item.date || '', 
+                item.carName || '', 
+                item.carNumber || '',
+                item.driverName || '', 
+                item.income || 0,  // ✅ Incost
+                item.expenditure || 0,
                 (item.income || 0) - (item.expenditure || 0),
-                item.documentTick ? 'Yes' : 'No', item.trcTick ? 'Yes' : 'No',
-                item.rcTick ? 'Yes' : 'No', item.insuranceTick ? 'Yes' : 'No',
+                item.documentTick ? 'Yes' : 'No', 
+                item.trcTick ? 'Yes' : 'No',
+                item.rcTick ? 'Yes' : 'No', 
+                item.insuranceTick ? 'Yes' : 'No',
                 item.numberPlateTick ? 'Yes' : 'No'
             ]);
 
             doc.autoTable({
-                head: [['#', 'Date', 'Car Name', 'Car No', 'Driver', 'Income', 'Expense', 'Net', 'Doc', 'TRC', 'RC', 'Ins', 'Plate']],
+                head: [['#', 'Date', 'Car Name', 'Car No', 'Driver', 'Incost', 'Expense', 'Net', 'Doc', 'TRC', 'RC', 'Ins', 'Plate']],
                 body: tableData,
-                startY: 35,
+                startY: 43,
                 theme: 'grid',
                 styles: { fontSize: 6 },
                 headStyles: { fillColor: [220, 38, 38] }
