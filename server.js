@@ -38,9 +38,9 @@ const leaseSchema = new mongoose.Schema({
 
 const LeaseEntry = mongoose.model('LeaseEntry', leaseSchema);
 
-// Home Route to prevent 'Cannot GET /' error
+// Home Route
 app.get('/', (req, res) => {
-    res.send('Car Lease Manager Backend is Live & Running!');
+    res.send('Haryana Car Lease Backend is Live & Running!');
 });
 
 // Get All Entries
@@ -63,6 +63,20 @@ app.post('/api/entries', async (req, res) => {
         });
         await newEntry.save();
         res.status(201).json(newEntry);
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
+});
+
+// Update / Edit Existing Entry
+app.put('/api/entries/:id', async (req, res) => {
+    try {
+        const updatedEntry = await LeaseEntry.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            { new: true }
+        );
+        res.json(updatedEntry);
     } catch (err) {
         res.status(400).json({ error: err.message });
     }
