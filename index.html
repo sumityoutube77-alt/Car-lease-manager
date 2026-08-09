@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Haryana Car Lease - Professional Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SheetJS for Excel Download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- jsPDF for PDF Download -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     
@@ -38,6 +40,7 @@
             margin: 0 auto;
         }
 
+        /* Professional Login Modal */
         #loginOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -58,16 +61,6 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.8);
-        }
-
-        .login-logo {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin: 0 auto 15px auto;
-            border: 2px solid var(--primary-blue);
-            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2);
         }
 
         .login-card h2 {
@@ -242,6 +235,7 @@
         .btn-submit:disabled {
             background: #94a3b8;
             cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .export-buttons {
@@ -274,6 +268,7 @@
             font-weight: 600;
             position: sticky;
             top: 0;
+            z-index: 10;
         }
 
         tr:hover {
@@ -312,19 +307,29 @@
             100% { transform: rotate(360deg); }
         }
 
-        .error-message {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 10px 15px;
+        .alert {
+            padding: 12px 20px;
             border-radius: 8px;
             margin-bottom: 15px;
             display: none;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+
+        .alert-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
         }
     </style>
 </head>
 <body>
 
-    <!-- Login Modal -->
+    <!-- Professional Login Modal -->
     <div id="loginOverlay">
         <div class="login-card">
             <div style="font-size: 3rem; margin-bottom: 10px;">🚗</div>
@@ -344,7 +349,7 @@
         </div>
     </div>
 
-    <!-- Main Application -->
+    <!-- Main Application Container -->
     <div class="container app-content" id="appContent">
         <header>
             <div class="brand-container">
@@ -363,10 +368,10 @@
             </div>
         </header>
 
-        <!-- Error Message -->
-        <div id="errorMessage" class="error-message"></div>
+        <!-- Alert Messages -->
+        <div id="alertMessage" class="alert"></div>
 
-        <!-- Entry Form -->
+        <!-- Entry Form Card -->
         <div class="glass-card">
             <h2 id="formTitle">Add New Lease Entry</h2>
             <form id="leaseForm" class="form-grid">
@@ -412,6 +417,7 @@
                     <input type="number" id="bakaya" placeholder="Auto-calculated" readonly>
                 </div>
 
+                <!-- Checkbox Verification Ticks -->
                 <div class="checkbox-section">
                     <label class="checkbox-label"><input type="checkbox" id="documentTick"> Document</label>
                     <label class="checkbox-label"><input type="checkbox" id="trcTick"> TRC</label>
@@ -425,7 +431,7 @@
             </form>
         </div>
 
-        <!-- Records Table -->
+        <!-- Records Table Card -->
         <div class="glass-card">
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px;">
                 <h2 style="margin-bottom: 0;">All Lease Entries Records</h2>
@@ -461,7 +467,7 @@
                     <tbody id="tableBody">
                         <tr>
                             <td colspan="18" style="text-align: center; padding: 20px;">
-                                Loading data...
+                                <div class="loading-spinner"></div> Loading data...
                             </td>
                         </tr>
                     </tbody>
@@ -471,7 +477,7 @@
     </div>
 
     <script>
-        // API Configuration - Update this to your actual deployed backend URL
+        // API Configuration
         const API_BASE_URL = 'https://car-lease-manager.onrender.com';
         const API_URL = `${API_BASE_URL}/api/entries`;
         
@@ -524,13 +530,16 @@
         costInput.addEventListener('input', calculateBakaya);
         paidInput.addEventListener('input', calculateBakaya);
 
-        // Show error message
-        function showError(message) {
-            const errorDiv = document.getElementById('errorMessage');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
+        // Show Alert
+        function showAlert(message, type = 'success') {
+            const alertDiv = document.getElementById('alertMessage');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.style.display = 'block';
+            
+            // Auto-hide after 5 seconds
             setTimeout(() => {
-                errorDiv.style.display = 'none';
+                alertDiv.style.display = 'none';
             }, 5000);
         }
 
@@ -538,18 +547,22 @@
         async function fetchEntries() {
             try {
                 const response = await fetch(API_URL);
+                
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    const errorData = await response.json();
+                    throw new Error(errorData.details || `HTTP ${response.status}: ${response.statusText}`);
                 }
+                
                 globalEntriesData = await response.json();
                 renderTable(globalEntriesData);
             } catch (err) {
                 console.error('Error fetching data:', err);
-                showError('Failed to fetch entries: ' + err.message);
+                showAlert('Failed to fetch entries: ' + err.message, 'danger');
                 document.getElementById('tableBody').innerHTML = `
                     <tr>
                         <td colspan="18" style="text-align: center; padding: 20px; color: #dc2626;">
-                            ❌ Error loading data. Please check backend connection.
+                            ❌ Error loading data. Please refresh or check backend connection.
+                            <br><small>${err.message}</small>
                         </td>
                     </tr>
                 `;
@@ -564,7 +577,7 @@
                 tableBody.innerHTML = `
                     <tr>
                         <td colspan="18" style="text-align: center; padding: 20px;">
-                            No entries found. Add your first lease entry!
+                            📋 No entries found. Add your first lease entry!
                         </td>
                     </tr>
                 `;
@@ -574,7 +587,7 @@
             entries.forEach((entry, index) => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><button class="edit-btn" onclick="editEntry('${entry._id}')">Edit</button></td>
+                    <td><button class="edit-btn" onclick="editEntry('${entry._id}')">✏️ Edit</button></td>
                     <td>${entry.serialNo || index + 1}</td>
                     <td>${entry.date || ''}</td>
                     <td>${entry.carBrand || ''}</td>
@@ -586,12 +599,12 @@
                     <td>₹${entry.cost || 0}</td>
                     <td>₹${entry.paidCost || 0}</td>
                     <td>₹${entry.bakaya || 0}</td>
-                    <td>${entry.documentTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                    <td>${entry.trcTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                    <td>${entry.rcTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                    <td>${entry.insuranceTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                    <td>${entry.numberPlateTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
-                    <td>${entry.agreementTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                    <td>${entry.documentTick ? '✅' : '❌'}</td>
+                    <td>${entry.trcTick ? '✅' : '❌'}</td>
+                    <td>${entry.rcTick ? '✅' : '❌'}</td>
+                    <td>${entry.insuranceTick ? '✅' : '❌'}</td>
+                    <td>${entry.numberPlateTick ? '✅' : '❌'}</td>
+                    <td>${entry.agreementTick ? '✅' : '❌'}</td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -621,12 +634,12 @@
             document.getElementById('numberPlateTick').checked = !!entry.numberPlateTick;
             document.getElementById('agreementTick').checked = !!entry.agreementTick;
 
-            document.getElementById('formTitle').innerText = "Edit Lease Entry";
+            document.getElementById('formTitle').innerText = "✏️ Edit Lease Entry";
             document.getElementById('submitBtn').innerHTML = "Update Entry in Database";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Handle Form Submission
+        // Handle Form Submission (Add or Update)
         document.getElementById('leaseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -678,25 +691,31 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    alert(editingId ? '✅ Entry Updated Successfully!' : '✅ Entry Saved Successfully!');
+                    showAlert(result.message || (editingId ? '✅ Entry Updated Successfully!' : '✅ Entry Saved Successfully!'), 'success');
+                    
+                    // Reset form
                     document.getElementById('leaseForm').reset();
                     document.getElementById('editingId').value = '';
                     document.getElementById('formTitle').innerText = "Add New Lease Entry";
                     document.getElementById('submitBtn').innerHTML = "Save Entry to Database";
                     calculateBakaya(); // Reset bakaya
+                    
+                    // Refresh the table
                     await fetchEntries();
                 } else {
-                    showError(result.error || 'Failed to save entry');
+                    showAlert(result.error || 'Failed to save/update entry', 'danger');
                     submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
                 }
             } catch (err) {
                 console.error('Error saving data:', err);
-                showError('Network error while saving. Please check your connection.');
+                showAlert('Network error while saving: ' + err.message, 'danger');
                 submitBtn.innerHTML = originalText;
-            } finally {
                 submitBtn.disabled = false;
+            } finally {
                 if (!editingId) {
                     submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
                 }
             }
         });
@@ -704,7 +723,7 @@
         // Excel Export
         function exportToExcel() {
             if(globalEntriesData.length === 0) {
-                alert('No data available to export!');
+                showAlert('No data available to export!', 'danger');
                 return;
             }
             
@@ -732,12 +751,14 @@
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "Haryana Car Lease");
             XLSX.writeFile(workbook, `HaryanaCarLease_${new Date().toISOString().split('T')[0]}.xlsx`);
+            
+            showAlert(`✅ Excel file downloaded with ${globalEntriesData.length} records!`, 'success');
         }
 
         // PDF Export
         function exportToPDF() {
             if(globalEntriesData.length === 0) {
-                alert('No data available to export!');
+                showAlert('No data available to export!', 'danger');
                 return;
             }
             
@@ -748,6 +769,7 @@
             doc.text("Haryana Car Lease - Records Dashboard", 14, 15);
             doc.setFontSize(10);
             doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 22);
+            doc.text(`Total Records: ${globalEntriesData.length}`, 14, 28);
             
             const tableData = globalEntriesData.map((item, index) => [
                 index + 1,
@@ -770,7 +792,7 @@
             doc.autoTable({
                 head: [['S.No', 'Date', 'Brand', 'Car No', 'Owner', 'Mobile', 'Cost', 'Paid', 'Bakaya', 'Doc', 'TRC', 'RC', 'Insurance', 'Plate', 'Agreement']],
                 body: tableData,
-                startY: 28,
+                startY: 34,
                 theme: 'grid',
                 styles: { fontSize: 7 },
                 headStyles: { fillColor: [2, 132, 199] },
@@ -785,6 +807,7 @@
             });
 
             doc.save(`HaryanaCarLease_${new Date().toISOString().split('T')[0]}.pdf`);
+            showAlert(`✅ PDF file downloaded with ${globalEntriesData.length} records!`, 'success');
         }
     </script>
 </body>
