@@ -1,949 +1,399 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Car Lease Manager</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Lease Management - Professional Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-blue: #0284c7;
+            --light-blue-bg: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+            --glass-bg: rgba(255, 255, 255, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
-            background: linear-gradient(145deg, #dceeff 0%, #b5d9f7 50%, #8fc5f0 100%);
+            background: var(--light-blue-bg);
             min-height: 100vh;
+            color: var(--text-dark);
             padding: 20px;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.25);
-            backdrop-filter: blur(16px);
-            border-radius: 32px;
-            padding: 24px 28px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
         }
 
-        h1 {
-            color: #0a2e4e;
-            font-size: 28px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        header {
+            text-align: center;
+            margin-bottom: 30px;
         }
 
-        h1 i {
-            background: rgba(10, 46, 78, 0.1);
-            padding: 10px;
+        header h1 {
+            font-size: 2.2rem;
+            color: var(--primary-blue);
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Glassmorphism Card Style */
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
             border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+            margin-bottom: 30px;
         }
 
-        .top-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
+        h2 {
             margin-bottom: 20px;
-            align-items: center;
-            justify-content: space-between;
+            font-size: 1.3rem;
+            color: var(--primary-blue);
         }
 
-        .search-box {
+        /* Form Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .input-group {
             display: flex;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.4);
-            padding: 6px 12px;
-            border-radius: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            flex-direction: column;
         }
 
-        .search-box input {
-            border: none;
-            background: transparent;
-            padding: 10px 8px;
-            font-size: 15px;
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+        }
+
+        .input-group input {
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #cbd5e1;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
             outline: none;
-            color: #0a2e4e;
-            width: 200px;
+            transition: all 0.3s ease;
         }
 
-        .search-box button {
-            background: none;
-            border: none;
-            color: #1a5a8a;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 0 10px;
+        .input-group input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
         }
 
-        .btn-primary {
-            background: rgba(20, 80, 160, 0.85);
-            border: none;
-            padding: 12px 28px;
-            border-radius: 40px;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 15px;
-            display: inline-flex;
-            align-items: center;
+        /* Checkboxes Grid */
+        .checkbox-section {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
             gap: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: 0.2s;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        .btn-primary:hover {
-            background: rgba(10, 60, 140, 0.95);
-            transform: translateY(-2px);
-        }
-
-        .btn-danger {
-            background: rgba(200, 50, 50, 0.8);
-            border: none;
-            padding: 6px 14px;
-            border-radius: 30px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-edit {
-            background: rgba(40, 130, 200, 0.75);
-            border: none;
-            padding: 6px 14px;
-            border-radius: 30px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-edit:hover,
-        .btn-danger:hover {
-            transform: scale(0.95);
-        }
-
-        .stats {
+        .checkbox-label {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px 30px;
-            padding: 14px 20px;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 24px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: 500;
         }
 
-        .stats span {
+        .checkbox-label input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-blue);
+            cursor: pointer;
+        }
+
+        /* Submit Button */
+        .btn-submit {
+            grid-column: 1 / -1;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 1rem;
             font-weight: 600;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 2px 16px;
-            border-radius: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.1s ease;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
         }
 
-        .table-wrap {
+        .btn-submit:hover {
+            background: #0369a1;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        /* Table Styling */
+        .table-container {
+            width: 100%;
             overflow-x: auto;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 4px 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 14px;
-            min-width: 1100px;
+            text-align: left;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(203, 213, 225, 0.6);
         }
 
         th {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 14px 10px;
-            text-align: left;
-            color: #0a2e4e;
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            position: sticky;
-            top: 0;
-            backdrop-filter: blur(4px);
-        }
-
-        td {
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            color: #0a2e4e;
-        }
-
-        tr:hover td {
-            background: rgba(255, 255, 255, 0.08);
-        }
-
-        .tick {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.15);
-            font-size: 14px;
-        }
-
-        .tick.yes {
-            color: #1a8a4a;
-        }
-        .tick.no {
-            color: #aaa;
-        }
-
-        .badge-bakaya {
-            background: rgba(200, 60, 60, 0.12);
-            color: #b03030;
-            padding: 4px 14px;
-            border-radius: 40px;
+            background: rgba(2, 132, 199, 0.1);
+            color: var(--primary-blue);
             font-weight: 600;
         }
 
-        .badge-paid {
-            background: rgba(40, 160, 80, 0.12);
-            color: #1a7a3a;
-            padding: 4px 14px;
-            border-radius: 40px;
-            font-weight: 600;
+        tr:hover {
+            background: rgba(255, 255, 255, 0.5);
         }
 
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(8px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            padding: 20px;
+        .badge-yes {
+            color: #16a34a;
+            font-weight: bold;
         }
 
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .modal {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(24px);
-            border-radius: 32px;
-            padding: 30px 32px;
-            max-width: 700px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            animation: fadeIn 0.2s ease;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
-        }
-
-        .modal h2 {
-            color: #0a2e4e;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .modal-close {
-            margin-left: auto;
-            background: rgba(255, 255, 255, 0.3);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px 18px;
-        }
-
-        .form-grid .full {
-            grid-column: 1 / -1;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .form-group label {
-            font-size: 13px;
-            font-weight: 500;
-            color: #0a2e4e;
-        }
-
-        .form-group input,
-        .form-group select {
-            padding: 10px 14px;
-            border-radius: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            background: rgba(255, 255, 255, 0.3);
-            font-size: 15px;
-            outline: none;
-            color: #0a2e4e;
-        }
-
-        .form-group input:focus {
-            border-color: rgba(30, 100, 200, 0.4);
-            background: rgba(255, 255, 255, 0.6);
-        }
-
-        .tick-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px 20px;
-            padding: 6px 0;
-        }
-
-        .tick-group label {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 400;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .tick-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #1a6aaa;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 14px;
-            margin-top: 24px;
-            padding-top: 18px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-cancel {
-            background: rgba(255, 255, 255, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 10px 28px;
-            border-radius: 40px;
-            color: #0a2e4e;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .btn-submit {
-            background: rgba(20, 80, 160, 0.85);
-            border: none;
-            padding: 10px 36px;
-            border-radius: 40px;
-            color: #fff;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-submit:hover {
-            background: rgba(10, 60, 140, 0.95);
-        }
-
-        .empty {
-            text-align: center;
-            padding: 60px 20px;
-            color: #0a2e4e;
-            opacity: 0.6;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            padding: 16px 28px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            display: none;
-            align-items: center;
-            gap: 12px;
-            z-index: 9999;
-            font-weight: 500;
-            color: #0a2e4e;
-        }
-
-        .toast.show {
-            display: flex;
-        }
-
-        .toast.success i {
-            color: #1a8a4a;
-        }
-        .toast.error i {
-            color: #c04040;
-        }
-
-        @media (max-width: 700px) {
-            .container {
-                padding: 16px;
-            }
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            .modal {
-                padding: 20px;
-            }
-            .top-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .search-box input {
-                width: 100%;
-            }
+        .badge-no {
+            color: #dc2626;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-    <div class="container" id="app">
-        <h1><i class="fas fa-car-side"></i> Car Lease Manager</h1>
+    <div class="container">
+        <header>
+            <h1>Car Lease Management</h1>
+            <p>Mousa Ji Enterprise - Professional Record Dashboard</p>
+        </header>
 
-        <div class="top-bar">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search..." />
-                <button id="searchBtn"><i class="fas fa-search"></i></button>
-            </div>
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                <button class="btn-primary" id="openAddBtn"><i class="fas fa-plus"></i> New Entry</button>
-                <button class="btn-primary" id="refreshBtn" style="background:rgba(100,100,100,0.4);"><i class="fas fa-sync-alt"></i></button>
-            </div>
-        </div>
-
-        <div class="stats" id="statsRow">
-            <div>📋 Total <span id="totalCount">0</span></div>
-            <div>💰 Total Cost <span id="totalCost">₹0</span></div>
-            <div>✅ Paid <span id="totalPaid">₹0</span></div>
-            <div>⚠️ Bakaya <span id="totalBakaya">₹0</span></div>
-        </div>
-
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Date</th>
-                        <th>Brand</th>
-                        <th>Car No.</th>
-                        <th>Owner</th>
-                        <th>Mobile</th>
-                        <th>Guarantor</th>
-                        <th>G. Mobile</th>
-                        <th>Cost</th>
-                        <th>Paid</th>
-                        <th>Bakaya</th>
-                        <th>Doc</th>
-                        <th>TRC</th>
-                        <th>RC</th>
-                        <th>Ins.</th>
-                        <th>Plate</th>
-                        <th>Agree.</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr><td colspan="18"><div class="empty">No entries yet. Add your first lease!</div></td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal">
-            <h2>
-                <i class="fas fa-pen-fancy"></i> <span id="modalTitle">Add Entry</span>
-                <button class="modal-close" id="modalCloseBtn"><i class="fas fa-times"></i></button>
-            </h2>
-            <form id="leaseForm">
-                <input type="hidden" id="editId" />
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>📅 Date</label>
-                        <input type="date" id="fDate" required />
-                    </div>
-                    <div class="form-group">
-                        <label>🚗 Car Brand</label>
-                        <input type="text" id="fBrand" placeholder="Toyota" required />
-                    </div>
-                    <div class="form-group">
-                        <label>🔢 Car Number</label>
-                        <input type="text" id="fCarNo" placeholder="MH-01-AB-1234" required />
-                    </div>
-                    <div class="form-group">
-                        <label>👤 Owner Name</label>
-                        <input type="text" id="fOwner" placeholder="Full name" required />
-                    </div>
-                    <div class="form-group">
-                        <label>📱 Mobile</label>
-                        <input type="text" id="fMobile" placeholder="9876543210" required />
-                    </div>
-                    <div class="form-group">
-                        <label>👔 Guarantor</label>
-                        <input type="text" id="fGuarantor" placeholder="Guarantor name" />
-                    </div>
-                    <div class="form-group">
-                        <label>📱 G. Mobile</label>
-                        <input type="text" id="fGMobile" placeholder="9876543210" />
-                    </div>
-                    <div class="form-group">
-                        <label>💰 Cost (₹)</label>
-                        <input type="number" id="fCost" placeholder="0" required min="0" />
-                    </div>
-                    <div class="form-group">
-                        <label>💵 Paid (₹)</label>
-                        <input type="number" id="fPaid" placeholder="0" required min="0" />
-                    </div>
-                    <div class="form-group">
-                        <label>📊 Bakaya (₹)</label>
-                        <input type="text" id="fBakaya" readonly style="background:rgba(255,255,255,0.15);" />
-                    </div>
-                    <div class="form-group full">
-                        <label>📋 Documents</label>
-                        <div class="tick-group">
-                            <label><input type="checkbox" id="fDoc" /> Document</label>
-                            <label><input type="checkbox" id="fTrc" /> TRC</label>
-                            <label><input type="checkbox" id="fRc" /> RC</label>
-                            <label><input type="checkbox" id="fIns" /> Insurance</label>
-                            <label><input type="checkbox" id="fPlate" /> Number Plate</label>
-                            <label><input type="checkbox" id="fAgree" /> Agreement</label>
-                        </div>
-                    </div>
+        <!-- Entry Form Card -->
+        <div class="glass-card">
+            <h2>Add New Lease Entry</h2>
+            <form id="leaseForm" class="form-grid">
+                <div class="input-group">
+                    <label>Date</label>
+                    <input type="date" id="date" required>
                 </div>
-                <div class="modal-actions">
-                    <button type="button" class="btn-cancel" id="modalCancelBtn">Cancel</button>
-                    <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Save</button>
+                <div class="input-group">
+                    <label>Car Brand Name</label>
+                    <input type="text" id="carBrand" placeholder="e.g. Swift / Dzire" required>
                 </div>
+                <div class="input-group">
+                    <label>Car Number</label>
+                    <input type="text" id="carNumber" placeholder="DL 01 AB 1234" required>
+                </div>
+                <div class="input-group">
+                    <label>Owner Name</label>
+                    <input type="text" id="ownerName" placeholder="Owner Full Name" required>
+                </div>
+                <div class="input-group">
+                    <label>Mobile No</label>
+                    <input type="tel" id="ownerMobile" placeholder="10-digit mobile" required>
+                </div>
+                <div class="input-group">
+                    <label>Guarantor</label>
+                    <input type="text" id="guarantor" placeholder="Guarantor Name">
+                </div>
+                <div class="input-group">
+                    <label>Mobile No (Guarantor)</label>
+                    <input type="tel" id="guarantorMobile" placeholder="10-digit mobile">
+                </div>
+                <div class="input-group">
+                    <label>Total Cost (₹)</label>
+                    <input type="number" id="cost" placeholder="Total lease amount" required>
+                </div>
+                <div class="input-group">
+                    <label>Paid Cost (₹)</label>
+                    <input type="number" id="paidCost" placeholder="Amount paid" required>
+                </div>
+                <div class="input-group">
+                    <label>Bakaya (₹)</label>
+                    <input type="number" id="bakaya" placeholder="Auto-calculated" readonly>
+                </div>
+
+                <!-- Checkbox Verification Ticks -->
+                <div class="checkbox-section">
+                    <label class="checkbox-label"><input type="checkbox" id="documentTick"> Document</label>
+                    <label class="checkbox-label"><input type="checkbox" id="trcTick"> TRC</label>
+                    <label class="checkbox-label"><input type="checkbox" id="rcTick"> RC</label>
+                    <label class="checkbox-label"><input type="checkbox" id="insuranceTick"> Insurance</label>
+                    <label class="checkbox-label"><input type="checkbox" id="numberPlateTick"> Number Plate</label>
+                    <label class="checkbox-label"><input type="checkbox" id="agreementTick"> Agreement</label>
+                </div>
+
+                <button type="submit" class="btn-submit">Save Entry to Database</button>
             </form>
         </div>
-    </div>
 
-    <!-- Toast -->
-    <div class="toast" id="toast">
-        <i class="fas fa-check-circle"></i>
-        <span id="toastMsg">Done!</span>
+        <!-- Records Table Card -->
+        <div class="glass-card">
+            <h2>All Lease Entries Records</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>S.No</th>
+                            <th>Date</th>
+                            <th>Brand</th>
+                            <th>Car No</th>
+                            <th>Owner</th>
+                            <th>Mobile</th>
+                            <th>Guarantor</th>
+                            <th>G. Mobile</th>
+                            <th>Cost</th>
+                            <th>Paid</th>
+                            <th>Bakaya</th>
+                            <th>Doc</th>
+                            <th>TRC</th>
+                            <th>RC</th>
+                            <th>Insurance</th>
+                            <th>Plate</th>
+                            <th>Agreement</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Data will be loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
     <script>
-        // ═══════════════════════════════════════════════════
-        // 🔌 YOUR MONGODB CONNECTION STRING
-        // ═══════════════════════════════════════════════════
-        const CONNECTION_STRING = 'mongodb+srv://Carlease:car@lease123@cluster0.bkey1c1.mongodb.net/?appName=Cluster0';
+        // BACKEND API URL (Render URL yaha daalein, jab aap backend deploy karlein)
+        const API_URL = 'https://YOUR-RENDER-BACKEND-URL.onrender.com/api/entries';
 
-        // ═══════════════════════════════════════════════════
-        // 🚀 MONGODB DATA API (SIMPLE VERSION)
-        // ═══════════════════════════════════════════════════
+        // Auto-calculate Bakaya (Cost - Paid Cost)
+        const costInput = document.getElementById('cost');
+        const paidInput = document.getElementById('paidCost');
+        const bakayaInput = document.getElementById('bakaya');
 
-        // Note: For security, we'll use a simple proxy approach.
-        // Since we can't expose the password in the browser directly,
-        // we'll use a free MongoDB Data API alternative.
-        // For this demo, we'll store data in localStorage if MongoDB fails.
+        function calculateBakaya() {
+            const cost = parseFloat(costInput.value) || 0;
+            const paid = parseFloat(paidInput.value) || 0;
+            bakayaInput.value = cost - paid;
+        }
 
-        let leases = [];
+        costInput.addEventListener('input', calculateBakaya);
+        paidInput.addEventListener('input', calculateBakaya);
 
-        // Try to load from localStorage first (offline demo mode)
-        function loadLocalData() {
+        // Fetch and display entries
+        async function fetchEntries() {
             try {
-                const data = localStorage.getItem('carLeases');
-                if (data) {
-                    leases = JSON.parse(data);
-                    return true;
-                }
-            } catch (e) {}
-            return false;
-        }
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                const tableBody = document.getElementById('tableBody');
+                tableBody.innerHTML = '';
 
-        function saveLocalData() {
-            try {
-                localStorage.setItem('carLeases', JSON.stringify(leases));
-            } catch (e) {}
-        }
-
-        // ═══════════════════════════════════════════════════
-        // 📡 MONGODB DATA API CALLS
-        // ═══════════════════════════════════════════════════
-
-        // Since you're having trouble with Data API, we'll use a different approach.
-        // We'll use the MongoDB Atlas Data API with your credentials.
-        // If it fails, we'll fallback to localStorage.
-
-        // For a real solution, you need to use Data API.
-        // Here's how to use it with your connection string:
-
-        async function callMongoDB(action, data) {
-            // We'll use a proxy to avoid CORS issues
-            // For now, we'll use the MongoDB Data API
-            try {
-                const response = await fetch('https://data.mongodb-api.com/app/data-xxxxx/endpoint/data/v1/action/' +
-                    action, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'api-key': 'YOUR_API_KEY_HERE',
-                        },
-                        body: JSON.stringify({
-                            dataSource: 'Cluster0',
-                            database: 'car_lease_db',
-                            collection: 'leases',
-                            ...data
-                        })
-                    });
-
-                if (!response.ok) {
-                    throw new Error('MongoDB API error: ' + response.status);
-                }
-                return await response.json();
-            } catch (e) {
-                console.warn('MongoDB API failed, using localStorage:', e);
-                return null;
+                data.forEach((entry, index) => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${entry.date || ''}</td>
+                        <td>${entry.carBrand || ''}</td>
+                        <td>${entry.carNumber || ''}</td>
+                        <td>${entry.ownerName || ''}</td>
+                        <td>${entry.ownerMobile || ''}</td>
+                        <td>${entry.guarantor || '-'}</td>
+                        <td>${entry.guarantorMobile || '-'}</td>
+                        <td>₹${entry.cost || 0}</td>
+                        <td>₹${entry.paidCost || 0}</td>
+                        <td>₹${entry.bakaya || 0}</td>
+                        <td>${entry.documentTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                        <td>${entry.trcTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                        <td>${entry.rcTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                        <td>${entry.insuranceTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                        <td>${entry.numberPlateTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                        <td>${entry.agreementTick ? '<span class="badge-yes">✔</span>' : '<span class="badge-no">✖</span>'}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (err) {
+                console.error('Error fetching data:', err);
             }
         }
 
-        // ═══════════════════════════════════════════════════
-        // 📋 CRUD OPERATIONS (with localStorage fallback)
-        // ═══════════════════════════════════════════════════
-
-        async function fetchLeases() {
-            // Try to load from localStorage first (demo mode)
-            loadLocalData();
-
-            // Also try to fetch from MongoDB if Data API is available
-            // For now, we'll work with localStorage
-            renderTable(leases);
-            updateStats(leases);
-            return leases;
-        }
-
-        async function addLease(data) {
-            data._id = Date.now().toString();
-            leases.push(data);
-            saveLocalData();
-            renderTable(leases);
-            updateStats(leases);
-            return data;
-        }
-
-        async function updateLeaseById(id, data) {
-            const index = leases.findIndex(l => l._id === id);
-            if (index !== -1) {
-                leases[index] = { ...leases[index], ...data };
-                saveLocalData();
-                renderTable(leases);
-                updateStats(leases);
-                return leases[index];
-            }
-            return null;
-        }
-
-        async function deleteLeaseById(id) {
-            leases = leases.filter(l => l._id !== id);
-            saveLocalData();
-            renderTable(leases);
-            updateStats(leases);
-            return true;
-        }
-
-        // ═══════════════════════════════════════════════════
-        // 🎨 RENDER FUNCTIONS
-        // ═══════════════════════════════════════════════════
-
-        function formatDate(d) {
-            if (!d) return '-';
-            const dt = new Date(d);
-            return dt.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-        }
-
-        function formatCurrency(n) {
-            return '₹' + Number(n).toLocaleString('en-IN');
-        }
-
-        function renderTable(data) {
-            const tbody = document.getElementById('tableBody');
-            if (!data || data.length === 0) {
-                tbody.innerHTML =
-                    `<tr><td colspan="18"><div class="empty">📭 No entries yet. Click <strong>New Entry</strong> to add.</div></td></tr>`;
-                return;
-            }
-
-            let html = '';
-            data.forEach((item, i) => {
-                const bak = Math.max(0, (item.cost || 0) - (item.paid || 0));
-                const tick = (val) => val ? `<span class="tick yes">✅</span>` :
-                    `<span class="tick no">⬜</span>`;
-
-                html += `
-                    <tr>
-                        <td>${i + 1}</td>
-                        <td>${formatDate(item.date)}</td>
-                        <td>${item.brand || '-'}</td>
-                        <td>${item.carNo || '-'}</td>
-                        <td>${item.owner || '-'}</td>
-                        <td>${item.mobile || '-'}</td>
-                        <td>${item.guarantor || '-'}</td>
-                        <td>${item.gMobile || '-'}</td>
-                        <td>${formatCurrency(item.cost || 0)}</td>
-                        <td>${formatCurrency(item.paid || 0)}</td>
-                        <td><span class="${bak > 0 ? 'badge-bakaya' : 'badge-paid'}">${formatCurrency(bak)}</span></td>
-                        <td>${tick(item.doc)}</td>
-                        <td>${tick(item.trc)}</td>
-                        <td>${tick(item.rc)}</td>
-                        <td>${tick(item.ins)}</td>
-                        <td>${tick(item.plate)}</td>
-                        <td>${tick(item.agree)}</td>
-                        <td>
-                            <button class="btn-edit" data-id="${item._id}"><i class="fas fa-edit"></i></button>
-                            <button class="btn-danger" data-id="${item._id}"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            });
-
-            tbody.innerHTML = html;
-
-            // Attach event listeners
-            tbody.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', () => openEditModal(btn.dataset.id));
-            });
-            tbody.querySelectorAll('.btn-danger').forEach(btn => {
-                btn.addEventListener('click', () => handleDelete(btn.dataset.id));
-            });
-        }
-
-        function updateStats(data) {
-            const total = data.length;
-            let sumCost = 0,
-                sumPaid = 0,
-                sumBak = 0;
-            data.forEach(item => {
-                const c = item.cost || 0;
-                const p = item.paid || 0;
-                sumCost += c;
-                sumPaid += p;
-                sumBak += Math.max(0, c - p);
-            });
-            document.getElementById('totalCount').textContent = total;
-            document.getElementById('totalCost').textContent = formatCurrency(sumCost);
-            document.getElementById('totalPaid').textContent = formatCurrency(sumPaid);
-            document.getElementById('totalBakaya').textContent = formatCurrency(sumBak);
-        }
-
-        // ═══════════════════════════════════════════════════
-        // 🖊️ MODAL FUNCTIONS
-        // ═══════════════════════════════════════════════════
-
-        function openModal(title, data = null) {
-            document.getElementById('modalTitle').textContent = title;
-            document.getElementById('modalOverlay').classList.add('active');
-
-            if (data) {
-                document.getElementById('editId').value = data._id;
-                document.getElementById('fDate').value = data.date || '';
-                document.getElementById('fBrand').value = data.brand || '';
-                document.getElementById('fCarNo').value = data.carNo || '';
-                document.getElementById('fOwner').value = data.owner || '';
-                document.getElementById('fMobile').value = data.mobile || '';
-                document.getElementById('fGuarantor').value = data.guarantor || '';
-                document.getElementById('fGMobile').value = data.gMobile || '';
-                document.getElementById('fCost').value = data.cost || 0;
-                document.getElementById('fPaid').value = data.paid || 0;
-                document.getElementById('fDoc').checked = !!data.doc;
-                document.getElementById('fTrc').checked = !!data.trc;
-                document.getElementById('fRc').checked = !!data.rc;
-                document.getElementById('fIns').checked = !!data.ins;
-                document.getElementById('fPlate').checked = !!data.plate;
-                document.getElementById('fAgree').checked = !!data.agree;
-                calcBakaya();
-            } else {
-                document.getElementById('editId').value = '';
-                document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
-                document.getElementById('fBrand').value = '';
-                document.getElementById('fCarNo').value = '';
-                document.getElementById('fOwner').value = '';
-                document.getElementById('fMobile').value = '';
-                document.getElementById('fGuarantor').value = '';
-                document.getElementById('fGMobile').value = '';
-                document.getElementById('fCost').value = 0;
-                document.getElementById('fPaid').value = 0;
-                document.getElementById('fDoc').checked = false;
-                document.getElementById('fTrc').checked = false;
-                document.getElementById('fRc').checked = false;
-                document.getElementById('fIns').checked = false;
-                document.getElementById('fPlate').checked = false;
-                document.getElementById('fAgree').checked = false;
-                calcBakaya();
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('modalOverlay').classList.remove('active');
-        }
-
-        function calcBakaya() {
-            const cost = parseFloat(document.getElementById('fCost').value) || 0;
-            const paid = parseFloat(document.getElementById('fPaid').value) || 0;
-            document.getElementById('fBakaya').value = Math.max(0, cost - paid);
-        }
-
-        document.getElementById('fCost').addEventListener('input', calcBakaya);
-        document.getElementById('fPaid').addEventListener('input', calcBakaya);
-
-        function openAddModal() {
-            openModal('Add Lease Entry');
-        }
-
-        function openEditModal(id) {
-            const item = leases.find(l => l._id === id);
-            if (item) openModal('Edit Lease Entry', item);
-            else showToast('Entry not found', 'error');
-        }
-
-        async function handleDelete(id) {
-            if (!confirm('Delete this entry?')) return;
-            await deleteLeaseById(id);
-            showToast('Deleted successfully');
-        }
-
-        // ═══════════════════════════════════════════════════
-        // 📨 FORM SUBMIT
-        // ═══════════════════════════════════════════════════
-
+        // Handle Form Submission
         document.getElementById('leaseForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const editId = document.getElementById('editId').value;
-            const data = {
-                date: document.getElementById('fDate').value,
-                brand: document.getElementById('fBrand').value.trim(),
-                carNo: document.getElementById('fCarNo').value.trim(),
-                owner: document.getElementById('fOwner').value.trim(),
-                mobile: document.getElementById('fMobile').value.trim(),
-                guarantor: document.getElementById('fGuarantor').value.trim(),
-                gMobile: document.getElementById('fGMobile').value.trim(),
-                cost: parseFloat(document.getElementById('fCost').value) || 0,
-                paid: parseFloat(document.getElementById('fPaid').value) || 0,
-                doc: document.getElementById('fDoc').checked,
-                trc: document.getElementById('fTrc').checked,
-                rc: document.getElementById('fRc').checked,
-                ins: document.getElementById('fIns').checked,
-                plate: document.getElementById('fPlate').checked,
-                agree: document.getElementById('fAgree').checked,
+            const formData = {
+                date: document.getElementById('date').value,
+                carBrand: document.getElementById('carBrand').value,
+                carNumber: document.getElementById('carNumber').value,
+                ownerName: document.getElementById('ownerName').value,
+                ownerMobile: document.getElementById('ownerMobile').value,
+                guarantor: document.getElementById('guarantor').value,
+                guarantorMobile: document.getElementById('guarantorMobile').value,
+                cost: parseFloat(document.getElementById('cost').value),
+                paidCost: parseFloat(document.getElementById('paidCost').value),
+                bakaya: parseFloat(document.getElementById('bakaya').value),
+                documentTick: document.getElementById('documentTick').checked,
+                trcTick: document.getElementById('trcTick').checked,
+                rcTick: document.getElementById('rcTick').checked,
+                insuranceTick: document.getElementById('insuranceTick').checked,
+                numberPlateTick: document.getElementById('numberPlateTick').checked,
+                agreementTick: document.getElementById('agreementTick').checked
             };
 
-            if (!data.brand || !data.carNo || !data.owner || !data.mobile) {
-                showToast('Please fill Brand, Car No, Owner, and Mobile', 'error');
-                return;
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    alert('Entry Saved Successfully!');
+                    document.getElementById('leaseForm').reset();
+                    fetchEntries();
+                } else {
+                    alert('Failed to save entry.');
+                }
+            } catch (err) {
+                console.error('Error saving data:', err);
+                alert('Network error while saving.');
             }
-
-            if (editId) {
-                await updateLeaseById(editId, data);
-                showToast('Entry updated ✅');
-            } else {
-                await addLease(data);
-                showToast('Entry added ✅');
-            }
-
-            closeModal();
         });
 
-        // ═══════════════════════════════════════════════════
-        // 🔍 SEARCH
-        // ═══════════════════════════════════════════════════
-
-        function performSearch() {
-            const q = document.getElementById('searchInput').value.trim().toLowerCase();
-            if (!q) { renderTable(leases); return; }
-            const filtered = leases.filter(item =>
-                (item.brand || '').toLowerCase().includes(q) ||
-                (item.carNo || '').toLowerCase().includes(q) ||
-                (item.owner || '').toLowerCase().includes(q) ||
-                (item.mobile || '').includes(q)
-            );
-            renderTable(filtered);
-        }
-
-        document.getElementById('searchBtn').addEventListener('click', performSearch);
-        document.getElementById('searchInput').addEventListener('keyup', (e) => {
-            if (e.key === 'Enter') performSearch();
-            if (document.getElementById('searchInput').value.trim() === '') renderTable(leases);
-        });
-
-        // ═══════════════════════════════════════════════════
-        // 🎯 EVENT LISTENERS
-        // ═══════════════════════════════════════════════════
-
-        document.getElementById('openAddBtn').addEventListener('click', openAddModal);
-        document.getElementById('refreshBtn').addEventListener('click', () => {
-            fetchLeases();
-            showToast('Refreshed 🔄');
-        });
-        document.getElementById('modalCloseBtn').addEventListener('click', closeModal);
-        document.getElementById('modalCancelBtn').addEventListener('click', closeModal);
-        document.getElementById('modalOverlay').addEventListener('click', (e) => {
-            if (e.target === e.currentTarget) closeModal();
-        });
-
-        // ═══════════════════════════════════════════════════
-        // 💬 TOAST
-        // ═══════════════════════════════════════════════════
-
-        function showToast(msg, type = 'success') {
-            const toast = document.getElementById('toast');
-            toast.className = 'toast show ' + type;
-            document.getElementById('toastMsg').textContent = msg;
-            clearTimeout(toast._timer);
-            toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
-        }
-
-        // ═══════════════════════════════════════════════════
-        // 🚀 INIT
-        // ═══════════════════════════════════════════════════
-
-        fetchLeases();
-
-        console.log('🚗 Car Lease Manager loaded!');
-        console.log('ℹ️ Using localStorage for data storage.');
-        console.log('📝 To connect to MongoDB, please set up Data API.');
-        console.log('🔑 Your connection string:', CONNECTION_STRING);
+        // Initial Load
+        fetchEntries();
     </script>
-
 </body>
 </html>
