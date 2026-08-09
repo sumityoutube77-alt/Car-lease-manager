@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+require('dotenv').config();
 
 const app = express();
 
@@ -69,7 +69,7 @@ const userSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-// Lease Entry Schema (with user reference)
+// Lease Entry Schema
 const leaseSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     serialNo: { type: Number, default: 0 },
@@ -144,11 +144,10 @@ function verifyToken(req, res, next) {
 // 1. REGISTER
 app.post('/api/auth/register', async (req, res) => {
     try {
-        console.log('📝 Registration attempt:', req.body);
+        console.log('📝 Registration attempt:', req.body.username || req.body.email);
 
         const { fullName, email, username, password } = req.body;
 
-        // Validate input
         if (!fullName || !email || !username || !password) {
             return res.status(400).json({ error: 'All fields are required' });
         }
@@ -157,7 +156,6 @@ app.post('/api/auth/register', async (req, res) => {
             return res.status(400).json({ error: 'Password must be at least 6 characters' });
         }
 
-        // Check if user exists
         const existingUser = await User.findOne({
             $or: [{ username }, { email }]
         });
@@ -171,10 +169,8 @@ app.post('/api/auth/register', async (req, res) => {
             }
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create user
         const user = new User({
             fullName,
             email,
@@ -214,19 +210,16 @@ app.post('/api/auth/login', async (req, res) => {
             return res.status(400).json({ error: 'Username and password required' });
         }
 
-        // Find user
         const user = await User.findOne({ username });
         if (!user) {
             return res.status(401).json({ error: 'Invalid username or password' });
         }
 
-        // Verify password
         const isValid = await bcrypt.compare(password, user.password);
         if (!isValid) {
             return res.status(401).json({ error: 'Invalid username or password' });
         }
 
-        // Generate token
         const token = generateToken(user);
 
         console.log('✅ User logged in:', username);
@@ -271,7 +264,7 @@ app.get('/api/auth/verify', verifyToken, async (req, res) => {
     }
 });
 
-// 4. FORGOT PASSWORD - Send OTP
+// 4. FORGOT PASSWORD - OTP Generate (Dashboard Par Show)
 app.post('/api/auth/forgot-password', async (req, res) => {
     try {
         const { username } = req.body;
@@ -285,27 +278,26 @@ app.post('/api/auth/forgot-password', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Generate 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000).toString();
         
-        // Save OTP with expiry (10 minutes)
         user.resetOTP = otp;
         user.resetOTPExpiry = new Date(Date.now() + 10 * 60 * 1000);
         await user.save();
 
-        console.log(`📧 OTP for ${username}: ${otp}`);
+        console.log(`🔑 OTP for ${username}: ${otp}`);
 
-        // In production, send email here
-        // For now, return OTP in response (for testing)
+        // OTP response mein bhejo - Dashboard par show hoga
         res.json({
             success: true,
-            message: 'OTP sent successfully',
-            otp: otp // Remove this in production, send via email
+            message: 'OTP generated successfully',
+            otp: otp,
+            username: user.username,
+            fullName: user.fullName
         });
 
     } catch (err) {
         console.error('Forgot password error:', err);
-        res.status(500).json({ error: 'Failed to send OTP' });
+        res.status(500).json({ error: 'Failed to generate OTP' });
     }
 });
 
@@ -327,20 +319,16 @@ app.post('/api/auth/reset-password', async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Check OTP
         if (user.resetOTP !== otp) {
             return res.status(400).json({ error: 'Invalid OTP' });
         }
 
-        // Check OTP expiry
         if (user.resetOTPExpiry < new Date()) {
             return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
         }
 
-        // Hash new password
         const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-        // Update password
         user.password = hashedPassword;
         user.resetOTP = '';
         user.resetOTPExpiry = null;
